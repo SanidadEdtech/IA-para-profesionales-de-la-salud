@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA para profesionales sanitarios | SanidadEdTech</title>
+<meta name="description" content="Guía interactiva desde cero para profesionales sanitarios: qué es la IA, qué son los gemelos digitales, y qué exige realmente el marco legal europeo (Reglamento de IA y RGPD) antes de usarla con datos de pacientes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#14151a;
+    --red:#b3282d;
+    --red-dim:#e9d3d3;
+    --pulse:#2f6b5e;
+    --pulse-dim:#d7e6e2;
+    --white:#ffffff;
+    --paper:#f6f5f2;
+    --line:#e3e1db;
+    --muted:#65686f;
+    --max:820px;
+    --sidebar:250px;
+    --display:'Bricolage Grotesque', sans-serif;
+    --body:'Inter', sans-serif;
+    --mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html, body{max-width:100%; overflow-x:hidden;}
+  body{
+    margin:0;
+    background:var(--white);
+    color:var(--black);
+    font-family:var(--body);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+  a{color:var(--red);}
+  ::selection{background:var(--red); color:var(--white);}
+
+  #pulseBar{
+    position:fixed; top:0; left:0; right:0; height:34px;
+    background:var(--white);
+    border-bottom:1px solid var(--line);
+    z-index:100;
+  }
+  #pulseBar svg{width:100%; height:100%; display:block;}
+  #pulseTrack{stroke:var(--line); stroke-width:2; fill:none;}
+  #pulseFill{stroke:var(--red); stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round;}
+  #pulseLabel{
+    position:absolute; right:14px; top:7px;
+    font-family:var(--mono); font-size:11px; color:var(--muted);
+    letter-spacing:.02em;
+  }
+
+  header.hero{
+    max-width:var(--max);
+    margin:0 auto;
+    padding:96px 24px 48px;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--red);
+    display:flex; align-items:center; gap:8px;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:8px; height:8px; border-radius:50%;
+    background:var(--pulse);
+    box-shadow:0 0 0 3px var(--pulse-dim);
+  }
+  h1.title{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:clamp(2.1rem, 5.4vw, 3.4rem);
+    line-height:1.05;
+    letter-spacing:-.01em;
+    margin:0 0 20px;
+  }
+  h1.title em{
+    font-style:normal;
+    color:var(--red);
+  }
+  .subtitle{
+    font-size:1.08rem;
+    color:var(--muted);
+    max-width:56ch;
+    margin:0 0 28px;
+  }
+  .meta-row{display:flex; flex-wrap:wrap; gap:10px;}
+  .meta-chip{
+    font-family:var(--mono);
+    font-size:12px;
+    border:1px solid var(--line);
+    border-radius:99px;
+    padding:6px 14px;
+    color:var(--muted);
+  }
+
+  .layout{
+    max-width:1180px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:var(--sidebar) 1fr;
+    gap:48px;
+    padding:0 24px 40px;
+    align-items:start;
+  }
+  nav.toc{
+    position:sticky;
+    top:56px;
+    max-height:calc(100vh - 90px);
+    overflow-y:auto;
+    padding-right:8px;
+    border-right:1px solid var(--line);
+  }
+  nav.toc p.toc-label{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 12px;
+  }
+  nav.toc ol{
+    list-style:none;
+    margin:0; padding:0;
+    display:flex; flex-direction:column; gap:2px;
+  }
+  nav.toc a{
+    display:flex; gap:10px; align-items:baseline;
+    text-decoration:none;
+    color:var(--black);
+    font-size:13.5px;
+    padding:7px 8px;
+    border-radius:6px;
+    line-height:1.3;
+  }
+  nav.toc a .num{
+    font-family:var(--mono);
+    color:var(--muted);
+    font-size:11px;
+    min-width:18px;
+  }
+  nav.toc a:hover{background:var(--paper);}
+  nav.toc a.active{background:var(--red); color:var(--white);}
+  nav.toc a.active .num{color:var(--red-dim);}
+
+  main{min-width:0;}
+
+  section.block{
+    padding:44px 0;
+    border-bottom:1px solid var(--line);
+    scroll-margin-top:70px;
+  }
+  section.block:first-of-type{padding-top:8px;}
+  .block-head{display:flex; gap:16px; align-items:flex-start; margin-bottom:18px;}
+  .block-num{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--red);
+    border:1px solid var(--red-dim);
+    background:var(--red-dim);
+    border-radius:6px;
+    padding:3px 8px;
+    white-space:nowrap;
+    margin-top:6px;
+  }
+  h2.block-title{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:clamp(1.35rem, 3vw, 1.85rem);
+    margin:0;
+    letter-spacing:-.01em;
+  }
+  .block-kicker{font-size:.85rem; color:var(--muted); margin:4px 0 0;}
+  h3.sub{font-family:var(--display); font-weight:700; font-size:1.08rem; margin:28px 0 10px;}
+  p{margin:0 0 14px;}
+  ul, ol.plain{margin:0 0 14px; padding-left:22px;}
+  li{margin-bottom:6px;}
+
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:14px;
+    margin:18px 0;
+  }
+  .card{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 18px;
+    background:var(--paper);
+  }
+  .card h4{font-family:var(--display); font-size:.98rem; margin:0 0 6px;}
+  .card p{font-size:.9rem; color:var(--muted); margin:0;}
+
+  .callout{
+    border-left:3px solid var(--red);
+    background:var(--red-dim);
+    border-radius:0 8px 8px 0;
+    padding:14px 18px;
+    margin:18px 0;
+    font-size:.94rem;
+  }
+  .callout.tip{border-left-color:var(--pulse); background:var(--pulse-dim);}
+  .callout strong{display:block; font-family:var(--display); font-size:.88rem; margin-bottom:4px; letter-spacing:.02em; text-transform:uppercase;}
+
+  code, .mono{font-family:var(--mono); font-size:.85em;}
+  .prompt-box{
+    background:var(--black);
+    color:#e7e7e2;
+    border-radius:10px;
+    padding:16px 18px;
+    font-family:var(--mono);
+    font-size:.84rem;
+    line-height:1.6;
+    margin:12px 0;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    word-break:break-word;
+  }
+  .prompt-box .label{
+    display:block; color:#8a8d94; font-size:.72rem;
+    text-transform:uppercase; letter-spacing:.1em; margin-bottom:8px;
+  }
+  .prompt-compare{display:grid; grid-template-columns:1fr; gap:12px; margin:14px 0 4px;}
+  @media (min-width:640px){.prompt-compare{grid-template-columns:1fr 1fr;}}
+
+  .tabs{margin:18px 0;}
+  .tab-buttons{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;}
+  .tab-btn{
+    font-family:var(--mono); font-size:12px; background:var(--white);
+    border:1px solid var(--line); padding:8px 12px; border-radius:99px;
+    cursor:pointer; color:var(--muted);
+  }
+  .tab-btn.active{background:var(--black); color:var(--white); border-color:var(--black);}
+  .tab-pane{display:none; border:1px solid var(--line); border-radius:10px; padding:18px 20px; background:var(--paper);}
+  .tab-pane.active{display:block;}
+  .tab-pane h4{font-family:var(--display); margin:0 0 8px; font-size:1rem;}
+
+  .accordion-item{border:1px solid var(--line); border-radius:10px; margin-bottom:10px; overflow:hidden;}
+  .accordion-trigger{
+    width:100%; text-align:left; background:var(--white); border:none;
+    padding:14px 18px; font-family:var(--body); font-weight:600; font-size:.95rem;
+    cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:12px; color:var(--black);
+  }
+  .accordion-trigger .plus{font-family:var(--mono); color:var(--red); font-size:1.1rem; transition:transform .2s ease;}
+  .accordion-item.open .plus{transform:rotate(45deg);}
+  .accordion-panel{max-height:0; overflow:hidden; transition:max-height .25s ease; background:var(--paper);}
+  .accordion-panel-inner{padding:0 18px 16px; font-size:.92rem; color:#3a3c42;}
+  .accordion-panel-inner .meta{
+    display:flex; gap:14px; flex-wrap:wrap; font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:10px;
+  }
+
+  table.simple{width:100%; min-width:520px; border-collapse:collapse; margin:0; font-size:.87rem;}
+  table.simple th, table.simple td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top;}
+  table.simple th{background:var(--paper); font-family:var(--display); font-weight:700; font-size:.8rem;}
+  .table-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch; margin:14px 0; border-radius:8px;}
+
+  .quiz-card{border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin:14px 0; background:var(--white);}
+  .quiz-q{font-weight:600; margin-bottom:10px;}
+  .quiz-options{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; border:1px solid var(--line); background:var(--white);
+    border-radius:8px; padding:10px 14px; font-family:var(--body); font-size:.92rem; cursor:pointer;
+  }
+  .quiz-opt.correct{border-color:var(--pulse); background:var(--pulse-dim);}
+  .quiz-opt.incorrect{border-color:var(--red); background:var(--red-dim);}
+  .quiz-opt:disabled{cursor:default;}
+  .quiz-explain{font-size:.85rem; color:var(--muted); margin-top:10px; display:none; padding-top:10px; border-top:1px dashed var(--line);}
+  .quiz-explain.show{display:block;}
+  #quizScore{
+    font-family:var(--mono); font-size:.9rem; margin-top:20px; padding:14px 18px;
+    border:1px dashed var(--line); border-radius:10px; color:var(--muted);
+  }
+  #quizReset{
+    margin-top:12px; font-family:var(--mono); font-size:12px; background:var(--black); color:var(--white);
+    border:none; padding:9px 16px; border-radius:99px; cursor:pointer;
+  }
+
+  .checklist{list-style:none; margin:14px 0; padding:0;}
+  .checklist li{
+    display:flex; gap:10px; align-items:flex-start; border:1px solid var(--line);
+    border-radius:8px; padding:10px 14px; margin-bottom:8px; font-size:.92rem; background:var(--paper);
+  }
+  .checklist input[type="checkbox"]{margin-top:3px; width:16px; height:16px; accent-color:var(--red); flex-shrink:0;}
+
+  .glossary dt{font-family:var(--display); font-weight:700; font-size:.95rem; margin-top:14px;}
+  .glossary dd{margin:2px 0 0; color:#3a3c42; font-size:.9rem;}
+
+  footer{
+    max-width:var(--max); margin:0 auto; padding:40px 24px 80px;
+    border-top:1px solid var(--line); font-size:.85rem; color:var(--muted);
+  }
+  footer .credit{display:flex; align-items:center; gap:10px; font-family:var(--mono); color:var(--black);}
+  footer .credit .dot{width:8px; height:8px; border-radius:50%; background:var(--pulse);}
+  footer .site-link{
+    display:inline-flex; align-items:center; gap:9px; flex-wrap:wrap;
+    text-decoration:none; color:var(--black); margin-top:10px; font-family:var(--mono); font-size:.82rem;
+  }
+  footer .site-link img{width:26px; height:26px; object-fit:contain; border-radius:6px;}
+  footer .site-link span.url{color:var(--red);}
+  footer .site-link:hover span.url{text-decoration:underline;}
+  footer .disclaimer{margin-top:18px; font-size:.78rem; line-height:1.6; max-width:60ch;}
+
+  @media (max-width:940px){
+    .layout{grid-template-columns:1fr; gap:0;}
+    nav.toc{
+      position:sticky; top:34px; max-height:none;
+      border-right:none; border-bottom:1px solid var(--line);
+      background:var(--white); padding:12px 24px; margin:0 -24px 24px;
+      overflow-x:auto; overflow-y:hidden; z-index:50;
+    }
+    nav.toc ol{flex-direction:row; gap:6px;}
+    nav.toc a{white-space:nowrap;}
+    nav.toc p.toc-label{display:none;}
+    header.hero{padding-top:60px;}
+  }
+  @media (max-width:520px){
+    .block-head{flex-direction:column; gap:8px;}
+    .card-grid{grid-template-columns:1fr;}
+    header.hero{padding:60px 18px 36px;}
+    .layout{padding:0 18px 40px;}
+    nav.toc{padding:12px 18px; margin:0 -18px 24px;}
+    section.block{padding:34px 0;}
+    .quiz-card{padding:16px 16px;}
+    .prompt-box{padding:14px 14px; font-size:.8rem;}
+    .accordion-panel-inner{padding:0 14px 14px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="pulseBar">
+  <svg viewBox="0 0 1000 34" preserveAspectRatio="none">
+    <path id="pulseTrack" d="M0,17 L10,17 Q17,10 24,17 L34,17 L37,21 L40,3 L43,29 L47,17 L58,17 Q68,10 78,17 L135,17 Q142,10 149,17 L159,17 L162,21 L165,3 L168,29 L172,17 L183,17 Q193,10 203,17 L260,17 Q267,10 274,17 L284,17 L287,21 L290,3 L293,29 L297,17 L308,17 Q318,10 328,17 L385,17 Q392,10 399,17 L409,17 L412,21 L415,3 L418,29 L422,17 L433,17 Q443,10 453,17 L510,17 Q517,10 524,17 L534,17 L537,21 L540,3 L543,29 L547,17 L558,17 Q568,10 578,17 L635,17 Q642,10 649,17 L659,17 L662,21 L665,3 L668,29 L672,17 L683,17 Q693,10 703,17 L760,17 Q767,10 774,17 L784,17 L787,21 L790,3 L793,29 L797,17 L808,17 Q818,10 828,17 L885,17 Q892,10 899,17 L909,17 L912,21 L915,3 L918,29 L922,17 L933,17 Q943,10 953,17 L1000,17"/>
+    <path id="pulseFill" d="M0,17 L10,17 Q17,10 24,17 L34,17 L37,21 L40,3 L43,29 L47,17 L58,17 Q68,10 78,17 L135,17 Q142,10 149,17 L159,17 L162,21 L165,3 L168,29 L172,17 L183,17 Q193,10 203,17 L260,17 Q267,10 274,17 L284,17 L287,21 L290,3 L293,29 L297,17 L308,17 Q318,10 328,17 L385,17 Q392,10 399,17 L409,17 L412,21 L415,3 L418,29 L422,17 L433,17 Q443,10 453,17 L510,17 Q517,10 524,17 L534,17 L537,21 L540,3 L543,29 L547,17 L558,17 Q568,10 578,17 L635,17 Q642,10 649,17 L659,17 L662,21 L665,3 L668,29 L672,17 L683,17 Q693,10 703,17 L760,17 Q767,10 774,17 L784,17 L787,21 L790,3 L793,29 L797,17 L808,17 Q818,10 828,17 L885,17 Q892,10 899,17 L909,17 L912,21 L915,3 L918,29 L922,17 L933,17 Q943,10 953,17 L1000,17"/>
+  </svg>
+  <span id="pulseLabel">0%</span>
+</div>
+
+<header class="hero">
+  <p class="eyebrow">SanidadEdTech · Guía para profesionales sanitarios</p>
+  <h1 class="title">IA para profesionales <em>sanitarios</em></h1>
+  <p class="subtitle">Parte de cero: qué es la IA, qué son los gemelos digitales, dónde te ayuda de verdad en tu práctica clínica, y qué exige el marco legal europeo antes de que se te ocurra pegar un dato de un paciente en un chat.</p>
+  <div class="meta-row">
+    <span class="meta-chip">19 secciones</span>
+    <span class="meta-chip">Nivel: desde cero</span>
+    <span class="meta-chip">Incluye Reglamento de IA de la UE + RGPD</span>
+    <span class="meta-chip">Lectura ≈ 40 min</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Índice de la guía">
+    <p class="toc-label">Índice</p>
+    <ol id="tocList">
+      <li><a href="#s01"><span class="num">01</span>Antes de nada</a></li>
+      <li><a href="#s02"><span class="num">02</span>Qué es la IA</a></li>
+      <li><a href="#s03"><span class="num">03</span>Cómo falla y por qué importa</a></li>
+      <li><a href="#s04"><span class="num">04</span>Tipos de IA en sanidad</a></li>
+      <li><a href="#s05"><span class="num">05</span>Los gemelos digitales</a></li>
+      <li><a href="#s06"><span class="num">06</span>Agentes de IA</a></li>
+      <li><a href="#s07"><span class="num">07</span>Usos reales en tu día a día</a></li>
+      <li><a href="#s08"><span class="num">08</span>Investigación y evidencia</a></li>
+      <li><a href="#s09"><span class="num">09</span>Un ejemplo por área</a></li>
+      <li><a href="#s10"><span class="num">10</span>El Reglamento de IA de la UE</a></li>
+      <li><a href="#s11"><span class="num">11</span>RGPD y datos de salud</a></li>
+      <li><a href="#s12"><span class="num">12</span>Lo que la IA no puede hacer</a></li>
+      <li><a href="#s13"><span class="num">13</span>Pedirle las cosas bien</a></li>
+      <li><a href="#s14"><span class="num">14</span>Riesgos clínicos reales</a></li>
+      <li><a href="#s15"><span class="num">15</span>Checklist antes de usarla</a></li>
+      <li><a href="#s16"><span class="num">16</span>Casos para reflexionar</a></li>
+      <li><a href="#s17"><span class="num">17</span>Autoevaluación</a></li>
+      <li><a href="#s18"><span class="num">18</span>Glosario</a></li>
+      <li><a href="#s19"><span class="num">19</span>Para terminar</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="block" id="s01">
+      <div class="block-head">
+        <span class="block-num">01</span>
+        <div>
+          <h2 class="block-title">Antes de nada</h2>
+          <p class="block-kicker">Esta guía parte de cero, y no es un curso de informática</p>
+        </div>
+      </div>
+      <p>No hace falta que sepas nada de tecnología para seguir esta guía. Da igual si trabajas en planta, en un centro de salud, en emergencias extrahospitalarias o en un quirófano: vamos a empezar por lo más básico —qué es realmente la IA— y vamos a subir el nivel poco a poco hasta llegar a la parte que de verdad te tiene que preocupar como profesional: qué exige la ley europea antes de que uses estas herramientas con información de un paciente.</p>
+      <p>Soy Vera López, enfermera de urgencias y emergencias, con experiencia tanto hospitalaria como extrahospitalaria (SVA/SVAM), y también profesora de FP de Sanidad. Sé lo importante que es mantenerse actualizada en una profesión donde la evidencia, los protocolos y ahora también la tecnología cambian constantemente. No hablo de la IA desde fuera de un box de urgencias ni desde fuera de un aula: la uso, la enseño y también la cuestiono, todos los días.</p>
+      <div class="callout tip">
+        <strong>Qué te vas a llevar</strong>
+        Entender qué es la IA y qué son los gemelos digitales, saber dónde te ahorra tiempo de verdad, y sobre todo, entender qué te exige el Reglamento de IA de la UE y el RGPD antes de tocar un dato de salud. Esto último no es opcional ni es letra pequeña: es responsabilidad profesional.
+      </div>
+    </section>
+
+    <section class="block" id="s02">
+      <div class="block-head">
+        <span class="block-num">02</span>
+        <div>
+          <h2 class="block-title">Qué es la IA, explicado desde cero</h2>
+          <p class="block-kicker">Sin jerga, sin dar nada por sabido</p>
+        </div>
+      </div>
+      <p>La inteligencia artificial (IA) es un sistema informático entrenado para realizar tareas que, hechas por una persona, dirías que requieren razonamiento: interpretar una imagen, redactar un informe, responder una pregunta, detectar un patrón en unos valores analíticos.</p>
+      <div class="callout">
+        <strong>Una aclaración importante</strong>
+        La IA no "entiende" la clínica como tú. No tiene criterio clínico, no asume responsabilidad, y no tiene sentido común. Reconoce patrones estadísticos en los datos con los que fue entrenada y genera una respuesta que suena coherente, pero coherente no es sinónimo de correcta.
+      </div>
+      <p>Dentro de la IA hay muchas técnicas distintas. La que más vas a usar tú, al menos al principio, son los <strong>modelos de lenguaje</strong> (los chatbots tipo ChatGPT, Claude, Gemini o Copilot), especializados en generar texto a partir de una instrucción. El resto de la guía se centra sobre todo en este tipo de herramienta, aunque también hablaremos de otras, como la IA de apoyo diagnóstico o los gemelos digitales.</p>
+    </section>
+
+    <section class="block" id="s03">
+      <div class="block-head">
+        <span class="block-num">03</span>
+        <div>
+          <h2 class="block-title">Cómo falla, y por qué en sanidad importa más que en ningún sitio</h2>
+          <p class="block-kicker">Las alucinaciones no son un fallo menor</p>
+        </div>
+      </div>
+      <p>Un modelo de lenguaje se entrena leyendo enormes cantidades de texto y aprendiendo a predecir la palabra más probable que sigue a otra. No "sabe" que un dato es cierto: genera la continuación estadísticamente más probable. Esto tiene un nombre y una consecuencia muy concreta para ti.</p>
+      <div class="callout">
+        <strong>Alucinación</strong>
+        Es cuando la IA genera un dato, una dosis, una interacción farmacológica o un procedimiento inventado, y lo presenta con la misma seguridad que un dato real. En cualquier contexto es un problema. En un contexto clínico, una alucinación no verificada puede llegar a un paciente.
+      </div>
+      <p>Añade a esto que la IA no tiene memoria entre conversaciones salvo que la herramienta lo indique, y que su conocimiento tiene fecha de corte: puede no conocer un protocolo actualizado hace pocos meses. Ninguna de estas limitaciones es motivo para no usarla. Es motivo para no usarla nunca sin verificar.</p>
+    </section>
+
+    <section class="block" id="s04">
+      <div class="block-head">
+        <span class="block-num">04</span>
+        <div>
+          <h2 class="block-title">Tipos de IA que te vas a encontrar en sanidad</h2>
+          <p class="block-kicker">No todas son iguales, ni tienen las mismas garantías</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+      <table class="simple">
+        <thead><tr><th>Tipo</th><th>Qué hace</th><th>Nivel de garantía</th></tr></thead>
+        <tbody>
+          <tr><td>Chatbot generalista</td><td>Redacta, resume, responde preguntas generales</td><td>Ninguna garantía clínica ni certificación sanitaria</td></tr>
+          <tr><td>IA de apoyo diagnóstico</td><td>Ayuda a interpretar imagen, ECG, analíticas</td><td>Puede estar certificada como producto sanitario (marcado CE)</td></tr>
+          <tr><td>Sistemas de triaje algorítmico</td><td>Prioriza pacientes según síntomas o constantes</td><td>Alto riesgo si decide o influye en la atención</td></tr>
+          <tr><td>Gemelos digitales</td><td>Simulan un órgano, un paciente o un proceso hospitalario</td><td>Variable, depende del uso clínico o de gestión</td></tr>
+          <tr><td>Asistentes de documentación clínica</td><td>Transcriben o estructuran notas e informes</td><td>Debe cumplir RGPD siempre; a veces también AI Act</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="callout tip">
+        <strong>La distinción que más importa</strong>
+        Una IA "certificada" y aprobada por tu centro para un uso clínico concreto no es lo mismo que un chatbot generalista de acceso libre. La primera ha pasado (o debería haber pasado) un proceso de validación; la segunda, no. Nunca las trates igual.
+      </div>
+    </section>
+
+    <section class="block" id="s05">
+      <div class="block-head">
+        <span class="block-num">05</span>
+        <div>
+          <h2 class="block-title">Los gemelos digitales, explicados</h2>
+          <p class="block-kicker">Uno de los usos más prometedores de la IA en salud</p>
+        </div>
+      </div>
+      <p>Un <strong>gemelo digital</strong> (digital twin) es una réplica virtual de algo real —un órgano, un paciente, un quirófano, incluso un hospital entero— construida a partir de datos reales (imagen médica, constantes, historia clínica, sensores) y actualizada de forma continua. La idea es simple: si tienes un modelo virtual suficientemente fiel de algo real, puedes simular sobre él antes de actuar sobre lo real.</p>
+      <div class="card-grid">
+        <div class="card"><h4>Gemelo de un órgano</h4><p>Un modelo virtual del corazón de un paciente concreto, construido con sus propias imágenes, para simular cómo respondería a una intervención antes de realizarla.</p></div>
+        <div class="card"><h4>Gemelo de un paciente</h4><p>Combina historial, genética, constantes y hábitos para simular la evolución de una enfermedad o probar distintos tratamientos de forma virtual.</p></div>
+        <div class="card"><h4>Gemelo de un proceso hospitalario</h4><p>Modelo virtual de un servicio (urgencias, quirófanos) para simular turnos, flujos de pacientes o capacidad ante una demanda inesperada.</p></div>
+        <div class="card"><h4>Gemelo para formación</h4><p>Entornos simulados de alta fidelidad para practicar procedimientos o emergencias sin riesgo real, muy útil en formación de SVA/SVB.</p></div>
+      </div>
+      <div class="callout">
+        <strong>Importante</strong>
+        Un gemelo digital es una simulación basada en datos, no una certeza. Cuanto más completos y actuales sean los datos que lo alimentan, más fiable es la simulación, pero sigue siendo una herramienta de apoyo a la decisión, no una decisión en sí misma. Cuando un gemelo digital se usa con fines clínicos reales, entra dentro del ámbito del Reglamento de IA y, a menudo, también de la normativa de productos sanitarios.
+      </div>
+    </section>
+
+    <section class="block" id="s06">
+      <div class="block-head">
+        <span class="block-num">06</span>
+        <div>
+          <h2 class="block-title">Agentes de IA</h2>
+          <p class="block-kicker">Cuando la IA deja de responder y empieza a actuar por su cuenta</p>
+        </div>
+      </div>
+      <p>Hasta ahora hemos hablado de la IA como algo que responde: le preguntas, te contesta, tú decides el siguiente paso. Un <strong>agente de IA</strong> es distinto: le das un objetivo, no una pregunta, y es él quien decide qué pasos dar para conseguirlo, encadenando búsquedas, herramientas y decisiones intermedias sin que tengas que intervenir en cada una.</p>
+      <div class="callout">
+        <strong>Chatbot vs. agente, en una frase</strong>
+        Un chatbot te da una respuesta cuando se la pides. Un agente persigue un objetivo por varios pasos, decidiendo él mismo el camino, y solo te informa (o te pide permiso) en los puntos que tú hayas definido.
+      </div>
+      <p>Por ejemplo: pedirle a un chatbot que te resuma un artículo es una sola acción. Pedirle a un agente que "revise la literatura reciente sobre un tema, descarte lo irrelevante y te prepare un borrador de resumen" implica que el propio sistema busque, filtre, lea y redacte en varios pasos encadenados, sin que tú supervises cada uno mientras ocurre.</p>
+      <h3 class="sub">Por qué esto te debería importar en sanidad</h3>
+      <p>Ya existen (o están empezando a probarse) agentes capaces de cruzar interacciones farmacológicas entre varias fuentes, gestionar agendas y recordatorios de pacientes, o monitorizar constantes de forma continua y avisar ante una desviación. La ventaja es evidente: ahorran muchísimo tiempo. El riesgo también: cuantos más pasos da un sistema sin que nadie los revise uno a uno, menos oportunidades hay de detectar un error antes de que llegue a tener consecuencias reales.</p>
+      <div class="callout tip">
+        <strong>Antes de dejar que un agente actúe por ti</strong>
+        Pregúntate: ¿qué pasos da sin pedirme permiso? ¿Puedo revisar cada uno antes de que se ejecute, especialmente los que no se pueden deshacer (enviar un mensaje, modificar un registro, generar una alerta)? Si no puedes contestar con claridad, ese agente todavía no está listo para un uso clínico, por muy bien que funcione en una demo.
+      </div>
+      <p>A efectos del Reglamento de IA de la UE (sección 10 de esta guía), un agente que actúa de forma autónoma en un proceso clínico entra, como mínimo, en la misma categoría de riesgo que cualquier otro sistema de apoyo a la decisión, y probablemente exige una supervisión humana todavía más explícita, precisamente porque su diseño reduce los puntos de control intermedios.</p>
+    </section>
+
+    <section class="block" id="s07">
+      <div class="block-head">
+        <span class="block-num">07</span>
+        <div>
+          <h2 class="block-title">Usos reales en tu día a día</h2>
+          <p class="block-kicker">Dónde la IA te ahorra tiempo de verdad</p>
+        </div>
+      </div>
+      <div class="card-grid">
+        <div class="card"><h4>Documentación clínica</h4><p>Transcribir o estructurar una nota de evolución a partir de un dictado, siempre revisando el resultado antes de firmarlo.</p></div>
+        <div class="card"><h4>Apoyo a la decisión</h4><p>Segunda opinión rápida sobre un diagnóstico diferencial o una interacción farmacológica, nunca como decisión final.</p></div>
+        <div class="card"><h4>Formación continua</h4><p>Simular casos clínicos para practicar protocolos (RCP, SVA) o repasar guías clínicas actualizadas.</p></div>
+        <div class="card"><h4>Comunicación con el paciente</h4><p>Traducir un informe técnico a un lenguaje comprensible para el paciente, revisando después que no se pierda precisión clínica.</p></div>
+        <div class="card"><h4>Gestión y turnos</h4><p>Apoyo en la planificación de recursos o listas de espera a partir de patrones históricos de demanda.</p></div>
+        <div class="card"><h4>Revisión bibliográfica</h4><p>Localizar y resumir literatura científica reciente sobre un tema, contrastando siempre las fuentes originales.</p></div>
+      </div>
+      <div class="callout tip">
+        <strong>El hilo común</strong>
+        En todos los casos, la IA acelera una parte del proceso. La firma, la responsabilidad y la decisión clínica final siguen siendo tuyas.
+      </div>
+    </section>
+
+    <section class="block" id="s08">
+      <div class="block-head">
+        <span class="block-num">08</span>
+        <div>
+          <h2 class="block-title">Investigación y búsqueda de evidencia con IA</h2>
+          <p class="block-kicker">Cómo mantenerte actualizada sin perder horas ni criterio propio</p>
+        </div>
+      </div>
+      <p>Estar actualizada forma parte del trabajo, no es un extra. La buena noticia es que hoy existen herramientas que reducen muchísimo el tiempo de una búsqueda bibliográfica; la mala noticia es que ninguna te libra de leer con criterio lo que encuentras.</p>
+      <div class="table-wrap">
+      <table class="simple">
+        <thead><tr><th>Herramienta</th><th>Qué es</th><th>Para qué la usas</th></tr></thead>
+        <tbody>
+          <tr><td>Google Académico</td><td>El buscador académico clásico, por palabras clave y citas</td><td>Punto de partida gratuito y fiable para cualquier búsqueda</td></tr>
+          <tr><td>Google Scholar Labs</td><td>Función experimental de IA dentro de Google Académico</td><td>Preguntas de investigación complejas en lenguaje natural, con acceso limitado (lista de espera)</td></tr>
+          <tr><td>Consensus</td><td>Buscador de IA sobre más de 200 millones de artículos revisados por pares</td><td>Ver de un vistazo el grado de acuerdo científico sobre una pregunta concreta</td></tr>
+          <tr><td>NotebookLM (Gemini)</td><td>Herramienta de Google para organizar documentos ya seleccionados por ti</td><td>Consolidar y resumir las fuentes que ya has verificado, no para buscarlas</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3 class="sub">Google Scholar Labs</h3>
+      <p>Es una función experimental, todavía en fase de acceso limitado, dentro del propio Google Académico. En vez de buscar solo por palabras clave, le planteas una pregunta de investigación completa y el sistema la descompone en subtemas, busca artículos que respondan a cada uno y te explica, para cada resultado, por qué es relevante para tu pregunta. Mantiene los enlaces habituales de Scholar (citar, citado por, texto completo), así que sigues pudiendo verificar cada fuente.</p>
+      <h3 class="sub">Consensus</h3>
+      <p>A diferencia de un chatbot generalista, Consensus no genera una respuesta desde su memoria: primero busca de verdad en su base de más de 200 millones de artículos revisados por pares, y solo después sintetiza lo que encuentra, con la cita enlazada a cada afirmación. Su función más útil para uso clínico es el <strong>Consensus Meter</strong>, que muestra qué porcentaje de los estudios encontrados apoya, contradice o es neutral respecto a una pregunta concreta, y su función "Ask Paper", que te permite preguntar directamente sobre un artículo único.</p>
+      <h3 class="sub">NotebookLM (con tecnología Gemini)</h3>
+      <p>Esta herramienta no busca evidencia por ti: organiza la que tú ya has encontrado y verificado. Le subes los PDFs o artículos que hayas seleccionado y genera resúmenes, esquemas o incluso un resumen en audio a partir de ese material concreto, útil para repasar antes de una sesión clínica o una formación. Es un gestor de notas potenciado por IA, no un buscador.</p>
+      <h3 class="sub">Un flujo de trabajo razonable</h3>
+      <ol class="plain">
+        <li>Delimita bien la pregunta clínica (formato PICO si el caso lo permite).</li>
+        <li>Haz una primera búsqueda amplia con Consensus o Scholar Labs para hacerte una idea del panorama.</li>
+        <li>Verifica cada estudio relevante en su fuente original: diseño, tamaño de muestra, posibles conflictos de interés, si ha sido retractado.</li>
+        <li>Organiza lo que vayas a usar de verdad en NotebookLM u otra herramienta de notas.</li>
+      </ol>
+      <div class="callout">
+        <strong>Lo que estas herramientas no hacen por ti</strong>
+        Reducen mucho el riesgo de alucinación porque parten de artículos reales, pero ninguna sustituye la lectura crítica: no todas filtran automáticamente estudios retractados, y ninguna evalúa por ti si el diseño de un estudio es lo bastante sólido como para cambiar tu práctica clínica.
+      </div>
+    </section>
+
+    <section class="block" id="s09">
+      <div class="block-head">
+        <span class="block-num">09</span>
+        <div>
+          <h2 class="block-title">Un ejemplo por área</h2>
+          <p class="block-kicker">Cómo se traduce esto según dónde trabajes</p>
+        </div>
+      </div>
+      <div class="tabs" id="areaTabs">
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="a1">Enfermería hospitalaria</button>
+          <button class="tab-btn" data-tab="a2">Emergencias / SVA</button>
+          <button class="tab-btn" data-tab="a3">Atención primaria</button>
+          <button class="tab-btn" data-tab="a4">Diagnóstico por imagen</button>
+          <button class="tab-btn" data-tab="a5">Gestión sanitaria</button>
+        </div>
+        <div class="tab-pane active" id="a1">
+          <h4>Notas de evolución más rápidas</h4>
+          <p>Dictas la evolución de un paciente y la IA la estructura en el formato del servicio. Tú revisas cada dato antes de guardarla en la historia clínica: nombres, dosis y horas, siempre verificados a mano.</p>
+        </div>
+        <div class="tab-pane" id="a2">
+          <h4>Repaso de protocolo antes de un turno</h4>
+          <p>Antes de un turno de SVA, simulas con la IA un caso de parada cardiorrespiratoria y te examina sobre el algoritmo. Después contrastas cualquier duda con el protocolo oficial de tu servicio, nunca al revés.</p>
+        </div>
+        <div class="tab-pane" id="a3">
+          <h4>Apoyo para explicar un tratamiento</h4>
+          <p>Generas una explicación en lenguaje sencillo de una pauta de tratamiento crónico para un paciente con baja alfabetización en salud, y la revisas tú antes de entregarla.</p>
+        </div>
+        <div class="tab-pane" id="a4">
+          <h4>Segunda lectura, nunca la única</h4>
+          <p>Un sistema certificado de apoyo diagnóstico señala un hallazgo en una prueba de imagen. Es una alerta a revisar, no un diagnóstico cerrado: la lectura final y la firma son tuyas.</p>
+        </div>
+        <div class="tab-pane" id="a5">
+          <h4>Previsión de demanda</h4>
+          <p>Un modelo predictivo estima la afluencia a urgencias del próximo fin de semana a partir de datos históricos, para ajustar turnos. Es una estimación, no una certeza: se planifica con margen.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="s10">
+      <div class="block-head">
+        <span class="block-num">10</span>
+        <div>
+          <h2 class="block-title">El Reglamento de IA de la UE: por qué esto no es opcional</h2>
+          <p class="block-kicker">Lee esta sección aunque te saltes el resto</p>
+        </div>
+      </div>
+      <p>Vamos a ser claras: el <strong>Reglamento (UE) 2024/1689 de Inteligencia Artificial</strong> (conocido como <em style="font-style:normal">AI Act</em>) no es una recomendación de buenas prácticas. Es una ley europea, con sanciones económicas graves y con implicaciones directas sobre tu responsabilidad profesional si trabajas con IA en un contexto clínico. Si tu centro o tú usáis IA con pacientes sin cumplirlo, no es solo un problema de "papeleo": es un problema legal y de seguridad del paciente al mismo tiempo.</p>
+      <h3 class="sub">La clasificación por riesgo</h3>
+      <p>El Reglamento clasifica los sistemas de IA según su riesgo. Esto es lo que necesitas grabarte:</p>
+      <div class="callout">
+        <strong>La mayoría de la IA clínica es "alto riesgo"</strong>
+        Los sistemas de IA usados para diagnóstico, apoyo a la decisión clínica, recomendación de tratamiento, triaje o monitorización de pacientes se consideran de <strong>alto riesgo</strong>. Esto implica supervisión humana obligatoria, documentación técnica, trazabilidad de las decisiones, gestión de riesgos y, en muchos casos, evaluación de conformidad antes de poder usarse.
+      </div>
+      <h3 class="sub">El calendario real, a fecha de hoy</h3>
+      <p>El calendario de aplicación se ha movido varias veces, así que vamos con lo que está en vigor de verdad a día de hoy, y lo que se ha aplazado:</p>
+      <div class="table-wrap">
+      <table class="simple">
+        <thead><tr><th>Obligación</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td>Prohibición de prácticas de IA de riesgo inaceptable</td><td>En vigor desde febrero de 2025</td></tr>
+          <tr><td>Obligaciones para modelos de propósito general (GPAI)</td><td>En vigor desde agosto de 2025</td></tr>
+          <tr><td>Transparencia y marcado de contenido generado por IA (art. 50)</td><td>En vigor desde agosto de 2026</td></tr>
+          <tr><td>Obligaciones plenas de alto riesgo, sistemas independientes</td><td>Aplazadas a diciembre de 2027 (Reglamento Ómnibus Digital de IA)</td></tr>
+          <tr><td>Alto riesgo integrado en dispositivos médicos (MDR/IVDR)</td><td>Aplazadas a agosto de 2028</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="callout tip">
+        <strong>Lo que NO ha cambiado</strong>
+        Este aplazamiento afecta solo al calendario del Reglamento de IA. La normativa de productos sanitarios (Reglamento de Productos Sanitarios, MDR, y de Diagnóstico In Vitro, IVDR) sigue aplicándose exactamente igual, sin ningún retraso. Si el sistema de IA que usas ya es un producto sanitario, el hecho de que el AI Act se haya aplazado no te libera de nada.
+      </div>
+      <p>Este calendario puede seguir cambiando: consulta siempre la fuente oficial de la Comisión Europea o al responsable de calidad/compliance de tu centro antes de tomar decisiones basadas solo en esta guía. Esto no es asesoramiento legal, es una guía de orientación para profesionales.</p>
+    </section>
+
+    <section class="block" id="s11">
+      <div class="block-head">
+        <span class="block-num">11</span>
+        <div>
+          <h2 class="block-title">RGPD y datos de salud: la otra mitad del cumplimiento</h2>
+          <p class="block-kicker">Aquí no hay plazos ni aplazamientos: se aplica ya</p>
+        </div>
+      </div>
+      <p>Los datos de salud son una <strong>categoría especial de datos</strong> según el artículo 9 del RGPD. Eso significa un nivel de protección reforzado, con una base legal específica para poder tratarlos, muy por encima de lo que exige un dato personal cualquiera.</p>
+      <ul>
+        <li><strong>Nunca subas datos identificables de un paciente</strong> —nombre, número de historia, imagen, fecha de nacimiento— a una herramienta de IA generalista que no esté aprobada por tu centro para ese uso.</li>
+        <li><strong>Anonimiza o seudonimiza</strong> siempre que necesites usar un caso real como ejemplo de consulta, formación o documentación.</li>
+        <li><strong>Comprueba dónde se procesan los datos</strong> y si la herramienta los usa para entrenar futuros modelos; muchas permiten desactivarlo, y tu centro debería tenerlo desactivado por defecto.</li>
+        <li><strong>Una evaluación de impacto (EIPD/DPIA)</strong> puede ser obligatoria antes de implantar una herramienta de IA que trate datos de salud a nivel de servicio o de centro; esa decisión no es individual, es del centro y de su Delegado de Protección de Datos.</li>
+      </ul>
+      <h3 class="sub">Sobre las marcas de agua de Claude</h3>
+      <p>Desde agosto de 2026, y como parte de las obligaciones de transparencia del artículo 50 del Reglamento de IA, Claude incorpora una marca de agua invisible en los textos que procesa. Es una señal legible solo por sistemas automáticos, no una prueba médico-legal: indica que un texto pudo pasar por la herramienta, pero no certifica ni su exactitud ni su autoría completa. No sustituye tu propia verificación clínica de ningún dato.</p>
+    </section>
+
+    <section class="block" id="s12">
+      <div class="block-head">
+        <span class="block-num">12</span>
+        <div>
+          <h2 class="block-title">Lo que la IA no puede hacer por ti</h2>
+          <p class="block-kicker">Y por qué la responsabilidad sigue siendo tuya</p>
+        </div>
+      </div>
+      <p>Ninguna herramienta de IA, por certificada que esté, asume responsabilidad clínica. La responsabilidad legal y deontológica de una decisión sobre un paciente sigue recayendo en el profesional que la toma, no en el algoritmo que la sugirió.</p>
+      <div class="callout">
+        <strong>El principio que no se negocia</strong>
+        Usar IA como apoyo no es lo mismo que delegar en ella. Si no puedes explicar por qué has tomado una decisión clínica sin recurrir a "porque lo dijo la IA", esa decisión todavía no está lista para aplicarse.
+      </div>
+      <p>Esto tiene además una dimensión de consentimiento informado: si vas a apoyarte en un sistema de IA para una decisión relevante sobre un paciente, tu centro debería tener protocolizado si es necesario informarlo, igual que se informa de cualquier otro elemento relevante del proceso asistencial.</p>
+    </section>
+
+    <section class="block" id="s13">
+      <div class="block-head">
+        <span class="block-num">13</span>
+        <div>
+          <h2 class="block-title">Cómo pedirle las cosas bien</h2>
+          <p class="block-kicker">Prompts útiles, sin datos de pacientes jamás</p>
+        </div>
+      </div>
+      <p>La regla número uno, antes que cualquier técnica de redacción: <strong>nunca incluyas datos identificables de un paciente real en el prompt</strong> de una herramienta generalista. Dicho esto, tres elementos mejoran cualquier consulta:</p>
+      <ol class="plain">
+        <li><strong>Contexto:</strong> tu rol, el servicio, el nivel de la persona que va a leer la respuesta.</li>
+        <li><strong>Tarea concreta:</strong> qué necesitas exactamente, con un verbo claro.</li>
+        <li><strong>Petición de fuentes:</strong> pide que indique en qué tipo de evidencia se basa, para poder verificarla tú después.</li>
+      </ol>
+      <div class="prompt-compare">
+        <div class="prompt-box"><span class="label">Prompt de riesgo</span>Paciente Juana Pérez, 78 años, con estos valores de analítica [datos reales]: dime qué tratamiento le pongo.</div>
+        <div class="prompt-box"><span class="label">Prompt correcto</span>Actúa como apoyo a la revisión clínica, no como fuente definitiva. Paciente anonimizado, mujer de 78 años, con estos valores analíticos genéricos [rango de valores, sin identificar a la persona]: dame posibles diagnósticos diferenciales a valorar y en qué guía clínica se basa cada uno, para que yo los verifique.</div>
+      </div>
+    </section>
+
+    <section class="block" id="s14">
+      <div class="block-head">
+        <span class="block-num">14</span>
+        <div>
+          <h2 class="block-title">Riesgos clínicos reales</h2>
+          <p class="block-kicker">No son teóricos, están documentados</p>
+        </div>
+      </div>
+      <div class="card-grid">
+        <div class="card"><h4>Sesgo de automatización</h4><p>Tendencia a aceptar la sugerencia de la IA incluso cuando contradice tu propio juicio clínico, solo porque "lo ha dicho la máquina".</p></div>
+        <div class="card"><h4>Fatiga de alertas</h4><p>El exceso de avisos automáticos lleva a ignorarlos por rutina, incluido el aviso importante entre cien irrelevantes.</p></div>
+        <div class="card"><h4>Sesgo algorítmico</h4><p>Modelos entrenados con datos poco representativos pueden fallar más en determinados grupos de población.</p></div>
+        <div class="card"><h4>Pérdida de habilidad clínica</h4><p>Delegar sistemáticamente el razonamiento diagnóstico puede erosionar, con el tiempo, tu propia capacidad de valorar sin apoyo.</p></div>
+      </div>
+    </section>
+
+    <section class="block" id="s15">
+      <div class="block-head">
+        <span class="block-num">15</span>
+        <div>
+          <h2 class="block-title">Checklist antes de usar IA en tu práctica</h2>
+          <p class="block-kicker">Repásalo mentalmente antes de cada uso relevante</p>
+        </div>
+      </div>
+      <ul class="checklist">
+        <li><input type="checkbox"> La herramienta que uso está aprobada por mi centro para este uso concreto.</li>
+        <li><input type="checkbox"> No he introducido ningún dato identificable de un paciente.</li>
+        <li><input type="checkbox"> He verificado el resultado con una fuente clínica oficial antes de aplicarlo.</li>
+        <li><input type="checkbox"> Podría explicar esta decisión sin recurrir a "lo dijo la IA".</li>
+        <li><input type="checkbox"> Sé a quién avisar en mi centro si detecto un fallo relevante de la herramienta.</li>
+      </ul>
+    </section>
+
+    <section class="block" id="s16">
+      <div class="block-head">
+        <span class="block-num">16</span>
+        <div>
+          <h2 class="block-title">Casos para reflexionar</h2>
+          <p class="block-kicker">Situaciones reales para pensar antes de que te pasen a ti</p>
+        </div>
+      </div>
+      <div class="accordion" id="casesAccordion">
+        <div class="accordion-item">
+          <button class="accordion-trigger"><span>Caso 1 · La dosis inventada</span><span class="plus">+</span></button>
+          <div class="accordion-panel"><div class="accordion-panel-inner">
+            Un compañero pregunta a un chatbot generalista la dosis de un fármaco poco habitual y la aplica sin comprobarla en la ficha técnica. ¿Qué ha fallado? No es la herramienta: es no haber verificado un dato con consecuencia clínica directa.
+          </div></div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger"><span>Caso 2 · El informe con nombre y apellidos</span><span class="plus">+</span></button>
+          <div class="accordion-panel"><div class="accordion-panel-inner">
+            Para ahorrar tiempo, alguien pega un informe completo de un paciente, con nombre y número de historia, en una IA generalista para que lo resuma. ¿Qué normativa se ha saltado? El RGPD, al tratar datos de salud identificables fuera de una herramienta autorizada por el centro.
+          </div></div>
+        </div>
+        <div class="accordion-item">
+          <button class="accordion-trigger"><span>Caso 3 · El triaje que nadie cuestionó</span><span class="plus">+</span></button>
+          <div class="accordion-panel"><div class="accordion-panel-inner">
+            Un sistema de triaje algorítmico prioriza mal a un paciente y nadie lo revisa porque "el sistema ya lo ha valorado". ¿Dónde está el fallo? En tratar una herramienta de apoyo de alto riesgo como si tomara la decisión final, sin la supervisión humana que exige el Reglamento de IA.
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="s17">
+      <div class="block-head">
+        <span class="block-num">17</span>
+        <div>
+          <h2 class="block-title">Autoevaluación rápida</h2>
+          <p class="block-kicker">Cinco preguntas para comprobar lo esencial</p>
+        </div>
+      </div>
+      <div id="quizContainer"></div>
+      <div id="quizScore" style="display:none;"></div>
+      <button id="quizReset" style="display:none;">Reiniciar autoevaluación</button>
+    </section>
+
+    <section class="block" id="s18">
+      <div class="block-head">
+        <span class="block-num">18</span>
+        <div>
+          <h2 class="block-title">Glosario</h2>
+          <p class="block-kicker">Términos clave de esta guía</p>
+        </div>
+      </div>
+      <dl class="glossary">
+        <dt>Alucinación</dt><dd>Información falsa o inventada que una IA genera con apariencia de certeza total.</dd>
+        <dt>Gemelo digital</dt><dd>Réplica virtual de un órgano, paciente o proceso, construida con datos reales y usada para simular antes de actuar.</dd>
+        <dt>Alto riesgo (AI Act)</dt><dd>Categoría del Reglamento de IA que incluye la mayoría de la IA clínica: diagnóstico, triaje, tratamiento o monitorización.</dd>
+        <dt>RGPD</dt><dd>Reglamento General de Protección de Datos de la UE; regula el tratamiento de datos personales, con protección reforzada para los datos de salud.</dd>
+        <dt>Datos de categoría especial</dt><dd>Datos personales, como los de salud, que requieren una base legal reforzada para poder tratarse (art. 9 RGPD).</dd>
+        <dt>DPIA / EIPD</dt><dd>Evaluación de impacto en la protección de datos, obligatoria antes de ciertos tratamientos de datos de alto riesgo.</dd>
+        <dt>Marcado CE</dt><dd>Certificación que acredita que un producto sanitario (incluida una IA con fines clínicos) cumple la normativa europea de seguridad.</dd>
+        <dt>Sesgo de automatización</dt><dd>Tendencia humana a confiar en exceso en una sugerencia automática, incluso frente al propio criterio profesional.</dd>
+      </dl>
+    </section>
+
+    <section class="block" id="s19" style="border-bottom:none;">
+      <div class="block-head">
+        <span class="block-num">19</span>
+        <div>
+          <h2 class="block-title">Para terminar</h2>
+          <p class="block-kicker">Lo que no cambia, aunque cambie la ley</p>
+        </div>
+      </div>
+      <p>El calendario del Reglamento de IA se seguirá moviendo, las herramientas cambiarán, y en unos años esta guía estará parcialmente desactualizada. Lo que no va a cambiar es el principio de fondo: la IA puede acelerar tu trabajo, pero la responsabilidad clínica, legal y ética sigue siendo tuya, con o sin algoritmo de por medio.</p>
+      <div class="callout tip">
+        <strong>Última idea</strong>
+        Usa la IA sin miedo, pero nunca sin verificar. Es la diferencia entre un profesional que se apoya en la tecnología y uno que depende de ella sin saberlo.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="credit"><span class="dot"></span>Creada por V. López (@sanidadedtech)</div>
+  <a class="site-link" href="https://sanidadedtech.es/" target="_blank" rel="noopener">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPkAAADNCAYAAAB6pNYrAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAJZOSURBVHhe7P13nCVHee+Pv6vDyWFy3JnNu9rVrrQKKEeSiNc2YLCNDRjsa5zA+OfA/V7f63R9zQUbG7AvNmAbYcAXI6MIBoQEKOfdlXa1eXZyPBNPPt1d9fujus+cSRukldCO5rOv2nOmQ3Wf7vrU89RTTz2PUEop1rCGNaxaGIs3rGENa1hdWCP5GtawyrFG8jWsYZVjjeRrWMMqxxrJ17CGVY41kq9hDascayRfwxpWOdZIvoY1rHKskXwNa1jlWCP5GtawyrFG8jWsYZVjjeRrWMMqxxrJ17CGVY41kq9hDascayRfwxpWOdZIvoY1rHKskXwNa1jlEGuRYV5+KKVAKVCgePU9foFAoRBCIITwN/qfazjnWCP5ywClFAKQUuKWS+Snp8lnpqnk8jjlMkrJ6nGLoTcpBMuTQPmb9Zn6OvM7QVSPEfoYpcmllNK8Ci4pQOqPJXXUQgihty13O9VjVzpAwzBM7EiYSDpFqrWFaF0awzQRxppi+VJgjeQvMZRSSMdhanCAY08+wcDe/Uz19lPKTGOUHUzPQyiveqzwibT4pSxHGVVL8kAgLiblouOQtSTXXUdwyop1+J3FYiy+xzODwDBMTMtGRCLYbc00X7CVzVddQfeei4nVNyw+YQ0vEmskfymhFNMjw+z7zrc5/oP7qAyNEa0oTE9hoNVWgQPKqUpZhN5+pliO5IvPriX5cvtZ5phaLP77zLDcVfC3zxdlmpRDJqWYTfPuXVz6znezYc/FmNHovCq/hheFNZK/RJCuy8knn+bRW/+ZuecPkXQcbE8ipEKoxWqpPzL3X8VKjbsqjU+BlQhZu3m5aqr7l9u5CCtdI4ASAYmXgx6aCKU7OoTAFQrPFLghm2K8nvXXX8vVv/Re0p2dayr8OcAayV8CuOUyh+77EU986Va8zCjRchlbeSjhYnhiGZJrBK/ihZL8dOQ7E5zuGpzBdZRY9PuU8Dmv/CJ90xsoQyCkwhL6vEo4QV4YRHfu4C0f/13qu7vXiP4isfb0ziGUUniVCofu/xEP/8MXUSNjRIsuIQ8MBVLpsfZK/eoCa/OrBDJ4FkoPY8KlIslSmdLzh/nO//lr8pnJqoazhheGNZKfQygpmTjRw4/+8Z8wJqexlYtAYkiJJRWWnH/gtc02kG8vFueijpcThgJbaiHvGVAxwUBiS5dQuUTu+HEe/X+3U84XVuwY13B6rKnr5xDluTlu++9/TPaZZ0lVHCzpYkqtmgohcE2JEgrXA9dT6CYN0hfeK8lwo+YNCS30Tgnlz3JVIaSvIajqdN2y8I1+C7QJpSus/UeN8U4BUklNwupQfNENKhBIfe+AMhVCSEJKYGKiDAMptEpv+j9OCoOKYVJsaOGm3/8Ym669GisUWljvGs4IayQ/R/Ach2MPPsh3/uR/0ehIYpUyQnnYEjwh8EwDz/AoVVzKjkfBVTgIlKFV+Co/fCw37jWUNlThH7tYDZP+DlXTcWhocgdEX6k70fxceGEhBIZfadA/LLD++1UqQ3cmCoXwjWvzhyg9S69MXCHwTA/huUQkxM0wESuEZZmYQoKYdw9SCPJ2jMqWjbz3rz9Forl5Qb1rODOskfxcQClK2Sy3/dEfM/fE49RLhe06ILQl3RMGyjTJV0rkyh5F00bU1xHrbCfZ2EgoFEJJhfI8lNTecAqFktKXlLrhV1X9YI57uTcn/HGu0H/ozmOelMt62CkF/pz5Igr7W3xHmWB+3d+u+xyh71eAElJTs8bLRqD7Jb3FwhMGjlskNz5BeXgMY65AqOLQkogRMRSeGdSrz3awmE4meetf/hnrL78cYZq1t7aGM8Aayc8BlJTMnjjJ137zd0jMZYg5HoZykYZCYSOVQcF1mCnmUPUtbH7ta9n11jfRtHE9oVjMtx77bq4+iarSrOb1zJNLH8sKc+oBkReQW/N4efjutacz+i2nAyxsPP5FltEG/G/VzqswM8vJJ5/miW/cwfSh52m1BA22CYZvjPfPMT3BZDjM+nf9FDd++MOE4/EFda/h9Fgj+TmAV6mw/5t38OTff4FUJYctPQQSaSgkNp4ryBRyzNkGF//cz/PaX/sVYo0Nr3qp5JbK9O7dz+1/+Unk8SN0hmxsSz8TrSGAJaFg2rhbNvPOv/kUybbWxdWs4TRYPKxbwwuA57j0P38Y0/UwFb68MxHKQiiB8iSOgrpt27jmF3+e6BrBAbAiYbr37OaSt70ZJxSi4Pqef+hHqFC4hiLkAVNZSrNzS7SENZweayQ/B/Bch+zkZI06rE1NgVXakxJXwOYrLyfR0rzm3FEDKxRi+2suI1ZXR8nz/CU2hm/JM3y2a/+DSr6w+PQ1nAHWWts5gPIkbqWMUHqaaOFOcKVE2ib1XeswLOu0Y99XE4RhEK+vw4rH8IRAKZ/kGIjAc04IpOfhuc7i09dwBlgj+VliOROGUhLpOCilp5D0P3++WkikIVGWwIiG1wi+GEphWhaeIXCFoY17an4KUQHKkLheBeksJHntu1juvaxBY43kZwgpFZWyg+t6uK6HlKrasJTyFUslcfFwfWJ7hodnOjiWh2uAKcw1ki8DhcCREg+Bp8CU2uAGIE2Qhp66U3J+3b3neTiOg+M4uK6r968RfVmskfwMoBSUKxVmZmcZHh5ldHSMQr6I43jVKS8hhB6TC6WdQoI5Y2UELRUldWNdQy30RJ/p/6sa1pQmP0gUEsMIZueUDr7hulQqFRzHQUqJ4zhrz3YFrJH8DOBJieNIDh05xt33fJtbv/JVntn/LHPZPIVCEaUUBgJTWBiEEIRA2YCFI0xKnsJRJlIuP6/9qoYfkcYzBNIyULVGNylQCu0g5I/fAykupcS2bcLhMIZh4LruGtFXwBrJT4OgzczMzvDQQw/xxJNPcuzYMfbu3cvQ8DDf/s5/cuzwEQoVDzeSYC6cYC6c1CWUpBCKUghHKIRsitJDnsp3/FWGQMV2laQYtslHI8zGbKbjQbGYjYaYjdlk4zaubSKlrBI8FAphmiaGYWBZFtJX59ewEGvOMIugfJfRWjiuy913/yc/+MEPABDCZNOmzbzxllu497vfoTgxRYNjEpeSmKVVeOlpdR2lyDllcoZky2WXsefmG2nt7MCyrAXXeDVCSsnk1BS9h49w9LF9eHNZYsJFeJrICDAReAaUwiYX3XAdIpGiobmFtvY2TFPbOLR0lwgBhmEseX+vdqyRvAZKKVzXw3EqSKmQ/nh7YHCQr3zlq8zNZVFKkS8U6VrXzTVXX8Whg8/T3FBPPBJHuR6mAcLQK7kMIOxJDEtQMQSEbaRh0NHVSXtbO5alG+m8T7hunAtfiPKda/T/S/cFexYiaOcrvd2ViTB/vZVQ2xEuvI6+2PLXrK1XHzA7O8f+ffsIC4OQZyAkOKb2vZdSYiCwlNCBLCIhlG2QmZwkmYhz8UUXkUwnEehnly8UsCyLaCSCZVvaGCoElm1j23b1Wb8asUZywHU9ZmdnKBZKAJhmCM+XwsVymbvvvofnnz+EZds4lQoXbN/ODddfTzgURrouCIXjQi6Xo1IpBwsyMYQgZJuAQhk6LJLruhimSSwSwTQM31injxXKb+C1JFvu7YjTq6UrNuggKo1fx3Kay6mhnXygZp5rMaqRb/wpRZ+0AkEimSAWi2HbNsVCASkVQnog9bhamRZSgRAGJgLhaXuHNEAJhcRDGArLtrAtG2HM37tpmAv+Fuh6EGBZJrFYjFgs+qqT9q9qkiulyOVyjI2OY1oWqWSKaCwKytDtWAj6Bwb47Gf/Dsd1EUA4HOYDH/gAO7Zv0x5tSlEq5Hn04UeJJ5PYIRt8j7ZAmmumGhhCUHbLYBqaH0ovrZxf/6UPXUDy6hrvs3tNKzfieQK+cJy6Du3QAgp/yOIjsIh3d3fT1dWFkgpPegghsCwLx5OYholUYAi/A5T+M1AgUNqmUV02CwqtcYFW1ZeDQuE6LvlCHs9zaGxsJPoqChT5qiW5lJJcLsfw8CgNDQ3EY3p1kxAC6S/yMkyTZ/bt5Sv/8hUQAqdSYfdFF/He976XZCKBUhIDGB0dZW5mlk2bNmFYhm7e0l8e6nttCb9T0bLNF4T+jqC5Bk1OLgi0tjyRTokFq9OWb/inrTc4Xfd2/g9YdEy1jhWuIWqmF/257omJCfr6+rhkzyXYIXveWGbojm/+GfjErQ4LlhJSBUtyq8fq+wiMm9VnH3QISuG4DtPTUzQ1NRKPx5etd7VhhbezuqGUolgscuJ4Dx0dHSQTyWWt3lJKBgcHCYXDmIZBOBzmoosuIh6LIwBTCKT0mJmdYt36TmKJiA5+YJqYpoFpCp8IEk95SLyqhiCCQs33JX/743tDIAxVU4JtK5Ta+l5AMQwDQxiYRvBbTF+y1h7nk/cUxTRMLMvSxbSwbZtkIolSikqlsqDTMJaEilbL9SovCkIIbMumLl1Pf38/hcKrwxf+VSnJKxWHo0eP0djYSGNjIwIDx3FxvQq5bI58vkjZdTCEyTe++U0y4xmklITDId71rnfS2tLq5yPRc7Y9Pce5/PIrtKqPHnsKIchkMoHc1hLLV8VV0LuqeSkj/L/xR7LzWNr5nA5BnbrW00mq09V/JnUsDyklTU2NhEJ67CylpJAv8NRTT9HS0kY6ncb1KsD8XHjQHIPP+d+yPAJJHhRqzrUtG8u2iMfipNNphN+BOa5DsVhkZmaGDRu6Ca3ysFKvOpJLKZmYyDA9PcO6znVYtoXAYGpqmhMnjpHNZQmHogjLZGZ6ltvvvJN4LI7nSurqUrz2ta8lHouhpAdC4bouE+NjXHbZawiFQkjlVhvU1OQU9Q31uqH6hPZ8wtSqptX9QaNdeMcL/jpTzJPjdMra6ep/4STPF/IYhkE8FmNmZhrDNLBMi71792LbYeLxOFK5UEPyYGpxMckV/hiqZtviDiA4Ryrd0dq2jeM6VCoVwqEwXV1dJJNJ8D3nRkZGqKtL09rasqCe1YZXHckrFYcjR47S0dFBNBIFAWOjYxw/fpzu7m6ampswDQtMg+efP8JnPvt31KVTVMplLr3sUt797p8lHAoh/MfmeR7PPvcssWiMTGYCO2STTKTYvn0bc3NZWlqafZJoMlVDEC+gTpXu1S1LUUvGWuL624XS5y95m6cj+ZITfGiVPPj+QlAsFigWC8zOzjE6OoZhCLq6uhgcGmLL5i3EE3E8V3upBUUIHT3G9NfbB+Nq5dsz9K0IP0wWGIH1wSeu8r8jBEKbRzBNk+nJKQ4fPszWbVtpa2vDEAb5fJ7Z2Rk2bFy/qv0WTtcCVh0cfyVToKJNT01z+Mhhtm7dSld3F/FYnEgkTCgUYnRk1I+/JvGkR2dnB9FohHAoRKimmIZJpVIhny9QKpWZnZtFSt1QF3ehgVxcJIMW/CWWGd+eUak598xRe0fzRdex9E7PBp7nYRgG2WyWUqlELl+g4jiE7BAImBifIJPJkMlkmJiYYCKjSyaTYWpyiqmpKSanJquf01NTTE5OkZnKkJmdZHIuKBmmZyeZmptkem6S6ewUU3NTTE1PMz6RYXJyksbGBnbu3MHBgwcpFAoYpraxOI6D5+lcdKsVrzqSu65LKpXCMi1c1+XYsWOs795AS2srpmHOj+2UIpvNEQqH8aSe5kqn00umaZRSGIZJfX0DXV3dxONxOjs7q/7Uyp8jlqqm+K6ZC7bXblu2aIu9Xv22zDm+P7f0O6TqOX645LMtC+5thbL4nMVFCAPPk3R2rqO5uZmudetIp+uQ/gITKSVtbe20tbfT0tJCe3s77e3ttLW10dTcRGtrKy0tLdXvra2ttLa00tzaQlNbI/GmGEadQiUdSLuIlItKO8hkBeIOKuwSTYYolgocO3acpuZmNm7cyMjICNJ3jY1Eonju6ib5q05dn5mZpVQsk0qlqFQqPPb4Y1x66eWkkqmq6quUouy6fOXWr3Pw0CEdRVVJfv03Psz27dt13Bd/jO04DgcOHGTz5s2EQiGE0OqhUoqhoSHiQeBB3/lEqvmxZVVIVt+AdtwwVpCei1+UfnW16jrVPEfBa30p326gSgdQfoplf+BApeKQrksTjUQwDIFUEtf1eO7Z5+jo6EApqefLlWJ6ZopEPIEdspmbm0MpRTKZxHEcSsUS6TrdwUopcIXLdHmafUeepmfkMMoqIz1Pe7oJcJWHKUOIvMmm9k1cuvUKJkYnWd+1Hs/zeGbvXq699mpsO8RkZpJ0XYp4PLbgt6wmvPpIPj1LsVimri5NuVzhmWee4TVXXOFPE+ljFJDN5fn85/+R0fEJlPQIh8L85m/9Bus6O3wjmX5sjuNy8OBBtmzZQjKZrKqo5UqZ4eERpOcf6ZNwoVlNawxV1FraV4BSwTx7bU1qYReglHZIEb7v3QoVimU6jgWo3blouG/4gVn9XaDAW3Qd2wqRTqVoaEgjlcQQUC6V2f/sc7S2tAKKjRs3IKVkcnKSRDJBJBJhMjOJMAT1dfWUy2WyuSxNTU0YholSJq5wOTL0HN995B5izQaZwhBl6eIK7X4jpUvEixBxYljlEG+95h20pNsxPJtkIs3jjz3CZZdfQiqV0p1LIk4ikVh486sIrzqST03NUC47pFNpyuUy+/fv54orr8AQBsrPE24YFhNTk/zt33yG2WwWQ0Bduo4PfeiDdHZ2AArhG4kcx+HgwYNs2ryFunS6Gkzi+PHjnOzro1hYOCGmEbDD03XVbBNLptAWIlCFF5K8RpLrg6peZ6dCMI5frhNQKvjP70KCDtDvGYJ57dpTvZqOwDIMTMOiLp1kz57dpJIJUJJSqcSzzz5LS4uOurpx4wZ9QlCRmreO19oWgu8SC8/wODr0LD9++rvUrYvRl+llqjBHxRJIJMIpExcJYipO2Inwlmt/hrZ0F5RMkrF6nnziUS657CISiQSTU5MkEjFSqVT1WqsNrz6ST05TKjnU1ddRLBZ57tnnlpAcDEbGRvnrT3+aUrmMAOrr6njvL/4imzdvxoCq1Hcch4PPH2TTpk2k03UoqafpDh06zHe/fy8/+uFDeNSwZIkZJJDCvmg8zetQSrtxnuq16emmlffXQuC78C6GZrn+Gmzyf0bQn4janbU/ET3kaGtr42ff+TNcceVltDbXAx6lUpln9z9Ha1srSio2btyoT/C99GqnymoxT3KdiSZXnuLBp+7n5OgJKqJMtpjXklxILCGJmVFiVpKNHZt4/RW3UCkqKkVFOl7HE48/xqWXXEw8HmMuO0skEiadTi++5KrBq47kk5mpKslLxRLPPfccl11+GZY5P4WilKJ/cIBPfvKTGJaF9DzaWlt593vew+bNm7FMA6T2nw6m0DZt2kQqlQalnT4OHHieO+66m+98+3u4ippFG8FnIAcDMs1PkZ3OOl4dby85zJ9uQi93XQ61edUAhFiB5CugNv2SkgsDV9Z2AIaCzs51fOiD7+fyyy+iva0ZQ0iKpRLP7n+O9o52pCfZsGFDVTsR/vTZfIX6w7IsPM/FsC2k9ABJvpSj5JYolAtkC1nKTlkbOgVYho1l2MQjCWLhCMloHCkF+WKF+vpGnnzscS7dfRHJVIKZ6Rki0TB1dauX5IvFyqpH0PiDximEqLpsBrAsCzeYVhGCiuMgDGOBZb06VVWT7aOKBbqtqCF4gIDgtd+NF1eUqa+j/O+L95+Dohb/LQyk0NsXRHSplkChEPNusGhNo/aZeVIyPDJMb28v/f399Pf5pb+fvv4+ek72kMvl8TztlVhxSkxlJuk93MvA4WGm++YojlZwJjzccUl5VDHTX2C0Z5KRkxkmBmfwSgoDA2UohFDoxWkrvL9VBv0mXiVQfjogLemk/zk/fRJIFM9TOBUXw7D0I1KKUCiknWBO2SCUrlfhx3Pz69ThHfHQWU11kSjh+UWekTRV/irPoCyAUChDB5DE0Jbv5QrGwlJbjxRLi/LH2cF38MfjChA6bLIwdDH9a1jKwMTAFJrS1S7Nr0v5q8xs28bzFCPDo5iGTWNTM62t7QtKS3ML6zrXMTM7QylfImSG8NwKU5lRwqbFrgt2c+mey7n8kit4zaVXcvmll3PJnl285vI97Nq5nbBtUSqW9PtwFaY7371KKTFN09cOVi9eVSSv8lMtFaQLjDxAsVTSKiR6SiydShEKh+fP9yXS2UH6J+tFK/Oqeu22Mymnw9nWd/ZFoFfgCZ/0i9MrE0jxYL161WlHd5rBkZ7n4XkeU1NTCASRcGRBicZimJZJY0MjSoHnAiqKQZz6+maSqQShaJhQJIwdtbEjNqGoRSgqiCZM4qkQjh/ZFX+8v7ijXmFks2rwqiJ51TKtBQyu42rvK1/iBiq4ZZmUikX0odqFsqm5uWqcqdajtM918Hfgf61R05AWqLEvHsF9KmNhCYjEMvuCUh1m1CCQ2stBsYzW4GMxuRcjSJcspdQOPFL3rqZpI4SpA0OYJrZtk0qlmJmdYWBwgP7B/moZHxtjbGyMqekpbNvCsmwsI4xtRRkbH2Kw/xijfb0MnTzBUM8JBnuOM9hznKGe4wz39jA3NUEiGsUyLcolB+VJlNTOPuCvW19846sM56bVnUfQkUIslKEdT5aD43hUKn7kT6GXe0YjkRpy6JY9P76vrciXzELvkX400heL5dTqVyqqvNei3Jf+y8O2bRqbGnWnpRSmoZfomqbAsnR0VhSkU2ls2wahMIQiEhakk4py/ijlmWeozDxNZeYZvOyzqMIhRPEERqmPplgJA2fBnH7w6IJrnqKfWhV4VZF8Xm20Edh4vgQ2TKrjc6U8EJJyuYhSLp70fd3Dy2c/CYxIQug130ETN4TWALRTyuKz/FVovlONqC5AXQxt3FJiqUHrTBFI21NJ3VPtE2dQR/W3+EUJkMLP6iqUP57XnxKB8p+X53mUK2VGhkcoFotYlkEorKOwhkIhHZvN1uvRx8bHKJcroExsYRIXJVJqjEbVhxh/nDbjOO3WMRp5jrboCcT009R5Y0TULKY7i1AKpTwMIbBNq6q9KU49HbkacHYtZjVA4FtWwaixei9+0YstwMvwtDomX0B+v6UHm6TwAxG+SNQaw14MqkONlwXzklw/q+B5+XuVwnM9XNdlcjKDUor6+nrq69M1pZ66+jpaWlqoVMogPYQqYapZLDnF9MhR+g8+zXT/UczCJEYuw/TJoxx48H5GjuzHKs9gUESIClBCGP7YnBVe6irEq4rkSiksIKQkQrlLFlosQTXcr4fpJyrUhNatI5h6syxr0TScPqf69zkYk59Kki5GrfStRVVyLas1LJXYRmBFXwGB5F4J0lO+5Vr5YZz0jIP09JDIc/VKPdM0aWtrxzItZmZmmJvLkZ3L6c9slmw2Sy6bIxqNIoWLI0uUJZRdm1zJxo63UnBjmNFmQolOPK+RZHI9jhvDdS09AyDA01Y7HYcvgNKr5VYzXnireyVB6TxZXrlMOZelMD1FbmKC7Pg4cyMjzAwPMz0wQKa3j9nhYYRXBuX5qvLK3XlAUhG4fy6Dxe6XtVhh80uPUxAvUFNfDujVcvPXqj6rmucSCoVob28nkUhoY5i//lsBnjuf7yydTmPZFq4BJdOmKOoosoG6rhvZcvW7qNt6A3OhDRTCm4i1X8UFV/0czdtuJme14xFFqRBK6ew2QbbU2nf3cj2TnwTOe5J7lQoTR4/x1Df+ne9+6q+547/9D2772B/wzY/+Lrf99ke47aO/w3989KN882Mf49//+8e576u3Ist5DEtgmIYu/vxudWxdY4GuHbct2e8L9VqSLz7G8OeRq3PTi6G0s4xQQktOrQf42oXnq6fB1JXGYmm7uAgFSLWkCIVO54QfNPEsSoDa4YKe3186vWYoWb0PvVu76wqlMJR2nRF+xVJKZmZmKBaLKCUolStUKg5CCHL5HIVCgexclqHhIUqlEqYUGNJEEaFspnHsDspGPZ4JigKmARURJmtHmY3WMxtqomw0oAzTDzCh/1fBLIv/e2rf4WrDMq3u/IBSinI+zxPf+hbf+qP/zvNfuZWJ++6jvP9ZOHEc0d+L19+LHOyD4UGM0VEYnUDMzGE6LkJ6KKmnU05lfBH+v2URnLLC7heCKqHOILb6Kx1V47pSuiNbovUoSqUS5XKZ9vZ2Ojs76WjvwBCCSrlCR3sHXV1ddK7rpL6unlKpBFL73QkhUFgIAVGVI+JNUhg5zODBhwnLAaL2HIZwEdhIQjUvSVSb/YrvdZXhvCS5Ugrpuhy4934e/9ev4g0MokZGMCYzqJlJyM8hs3OoQgGVzyNzeUQ2j8oWcPMl8OdKV+A1+K6tAp1K0zQsvOo5i0oQgJD5udcXjWVc2paTqj8J1F7/TO6nSvQA/gnB8xJ+wolSqVQlfBAcw3UllXIF6UlKZZ34ggXkVFiqSJQp7PIox/Y+SGH0GDGvjwQZorKA7Sd1CKDQU6L6u9JegKsc5+0vnBsd49m77iE6PUeoVISKh2FYCDsElo0dTRCLpYjF6ohH08QiCWKhEJZlIg2Bt8hffTGMIFcuAgwDL3CJVXJhqxX6z0Cdf6FQC7itr1vrwlpbfpI428uv9EgCqW5ZFvX19WQyGUZGRshkMpiWRTKZYmZmhrGxMcbGx7Atm3gsjmkZIJSfuEEiRAXTKGCIEl6lQGFuCi8/ScR0QFRQ/nLemgvPT1f6Hy/mvZ0POC9JrjyP0cNHKZ/sJe442MojlEzghUPY6TReJEq8sZmOjVsJx1OErTAh09SpiAxtbjsVWZSShCwLV0qkT75ypexPqy0Uq8KXDGcrxRcTVy32F68h+3z5yeF0EnslzKeM0J2kQIdFDjYbhvZ6cxyHilOhVC4xPTXN6Ngo5bJ+5oG2ZJh6bA/aXuEpl4r0KAIqHOeiK15DS3cndl0jZcPGASQeiAr46xV0PQubvTrLd3e+4fwkuVKUZqYxymUMt4Jl6vnoSDLJxZdfRnN7O6nWVtxYmGRbM+mmenyvTww/XdGpO29FLBbVCQ+F7vDLZe3LPn+Er4f6hreFLq0vDoGGqzsjv1Py5c+5u8rZ44URfdGEXU3mUSEEnvSYnZ2lUqmQSqZY17muGuets7OTzo5O1m9Yj23blIolpE9UpbRKX/EsCjJNxWzEi9XTsXMXlUgzWS+KSwgpAeGC0NOlQlC1rhNIcX+qdLXivCQ5SuE5FVzXd2wQYCEQrmR8aIRCNsfE9CQlz8WORcmVS3hKaSUxsIzXeDwtx5xILIowDQzDBmXgulJ7yM0nOlpiRDpXUMInt9/BLJb4r3TUdkZLVOGATEqTXSmF6/k+C1JWM67Ylq3n0C2dk9yyLF/31/MDAguhLCRJyrKdnGqD9FYqkQ3k3DbKXiNSJkGGMcR8RlOFxDDmp/ECu8qS+1xFOC9JrvyILHrJpt5mIlBlh6G+forZPIXpOebGJxnvH8LJFjAkfgPRJK/23P5YezEs2/aVZAMwKJbn44MH6rP+rrRH17Lzzy+04bww9bw6ili84xzidAbAU3VGeupKfw+elWVaJOIJ0qk0rusyPj7OxIQOyzw+Pk5mIsPM9Axz2SwhO4QpLAxhUZ9uoL6ukVS6jVBqPSK+GRXfhRu5EBHZTji6iVisg1S8kbq6OmyrxgEGf2ER+n0GDlGrFeclyfFDK1umhVICganlq2UiQxGshkYSXZ2odIKCLSgYioKS/hxvMCW2dE58Hnp+W0t6rebpNcn67Pk+IThPf87XoyOcLK33TBDc3dlTPbitV2x7rfkxAamEIWhsaqStrY3m5mYam3TqqqAkkkmSySQd7R1E/GQYpmnR0NhIc2sbDU2tpOpbSaS7CCc3Yye2EU5uIJZeR319C42NTdTV1RP21x4If1VcbRy5pVN7qwvnJcmVUniO6wdoECBCeIaNl0zTcsUVvOZ972Prz/wMu9/9Tra84fV4be3koyEqQstsGTiv16D2JUupV1kIpQMDIhRzc9M45bJ2WkHv0yJLB06gdqGKX1Xt2PNsYPguG9WyyNmlqlEsdnipahovP8tXkt7UcnuZ23IdFyWVn81klumpaaamdGKFqekp5mZnmZ2dJV/I4XmONnAKxfDICMeOHePo8SMcP3aM48dPcvxoL0ePnuTw8RMc7TnGif5jnOw/yujoCMVSWa9ddz0txf20yZ701iT5KxG+3AS/3ShsPDtK3ZbtdF9zI0+MZvj+waN8/8BRcvE6Ln7dmyFVT8Uw8ALiMZ8BVM+VzrdQ0zQYHR+j4pTxXBfDEIwMDzMzM+NL6XkoNe8au4DMapnx6KsM1WGQqJmpFnp7LamGhoYIh8M0NNTT1NQ0Xxr1ZyweY2ZmhtnZOYQ/1CqXS0jlsWH9Bnbs2MGOHTvYtWsXu3ZdyIW7L+DC3dvZtn0T4YhFvpCr5jQX/gxL8N71evKz74jPJ5yXJAffgOJPhSgEXjhE0wVbefzEMeo6Ornsqqu5+IqrmFWKQjxC647tlC0TIxyab3T+wpH5AEX6b+knRjBME9MwQEEul2N0fAzH8/Tyz5pOYV6CL20oYpEUfikRXGul8fLLhUCie0E6aGGAMNFDEU2uYFFIpVLBMA0ikUh1eakODuGnTDYM4vGYTn6hX1p1KiyZSBCPR4nH48TjCWLRBLFYjEQiQSQSxTJD1KV1VF5V4/hiGqYeTvlkX9zprDaclyRXvh901ehlSKxkCLs+CmFJyJA0xaKkojbp5iRZUSTSXIcRCeOg8JREVVMJBZ5s/tQMUHE9TvYPYIfCGKYJQmc+2f/sc5TKOq920C2AHlcubiKy9oCXBTpunBQ6jtzLieXV9OD96HvxzVxQ0ykahkEsHiEathge7GFk8ATjw72MD5/UZaSXkYETDPUdZ3xskJBta03KXzk2PDzMyZM99Jzs4WTPSU6e7OHkyZP0nBik58QAPT399PUNITBRNU73VQ0jUDRe3hf1suO8JLkQAkMqf+GG/9L8kEcVAVk8Mtk5CuUy+YIO42RjoFwPYZlgmxim6c+Z6hcslB/EwKlw9MQJRsfHEKaJwsCyQ0QTcY6eOM5jTzxBdi4LHghp4Hno2OWGH0ixZs137QqslwJ6HKwXibycxK61oAcEr/5uIf2iQycTUN23c8z3fAoMiR2StLaYdDTk6UhN0JGaoDM9Slf9OF1103QnZ+iuy7N9Y4q6RKhKSNM0CYfDZDKT9Pf3MzAwwNDQEENDgwwN9TM8PMD4+CigsGwThVd1Z8UntlJ6XL6apTjnK8n1fJUeY+lVUIrSdJ7ieJaWZDNzs0Ue2buPIz19TAxN0mAkmOoZwqp4CE8bWTy/Gumraq6SnOzr5fP/8A98/h/+gfxcFlOBJXUxlYHjSG6/+9v8+Sf/itvu+Q6ZuZxO3YP2mqqN+qkMUGL5qDAvCfxorcp4eQnPopVp8wiktv+gfdQObUw8hDdNJXuc3PijFCfup5j5HsXJ/6Q4+R1Kk9+lPHcf5bkHKc/uBWcYoYrVemzbpnt9Fzsv3MHOnTvZuXNHtezYsUPHyLeteZHtn6e/BB9+J7/MUGu14PwkuRAoqUP5oPRMdsh16Hv8SS6IJtmeqmNbWyv1tslF6zqZPXacicPHCLsKSxtnEcrAMG0Mw6JYKnP7nXfwf/760xw4dBjbMImGbGwkpiGxDImFxEZiGZAv5Ljne9/hzz/xlzz19NPVsWMttZSrMAyxYF75Zebey4blbA1KmLiuh/SWuowGirsSEilzFLNDzE4cxcn2YntDhNQwljeE4fZjqDGkO05xbgivPI0ptDOL53nU19ezvns9TY1NNDY2U1/fSH19PQ0NDTQ0NNDZ2cnGDRvxXG/euOZ73Gnlb21M/oqF8oNEqEADxAMnjzPcx9Pf/H/IQwfZZgpaKwUGn36UnicfIlwuYHsKU+n4a/oFG1Rclzu/fQ/fvff7CNskHLIxXA93Nocay2CMjMHQKOZYBjk+gTE3S8gpkggJCrlZvvZv/8Yz+55FIDBXbzt5QVDUaOc+grE4CqQSeJZNJNlIumEdltmIp+rwZD2e1J+ubMBV9VjhZoSZQCk/uCMwMTHB2Ngo4+Pjukzoz7HxMcbHx5mczDA4NIhpmbieTiMduB9LNe+5iN+mVivOS5JrDVBWUxUZQmAIheWU8Eb7OX7ftznwja/Te/c9FJ59lmR2hqhy9SIFz6sOIIvFMvf98H4efexRkokYEUMSzmZxevowB0boyubYkC2wKV+mezZH/UQG0deHGBolUqlgm+ApeOChR5memsUUJkIqhG/Im/+u/9aRUhbl+F4g/0+PoDHO13F2558LLKedBLMHEkNHZFf+0FxpbSZ4BqAwlLapWDKMWWklEt1JuOlaaL0J2XgDqul10PwGjJabMJuuJNRwOYmGizDtVqQ0kZ7EMAwsy6K/f4C+vj56+3rp7e2lt6+Xgf4BBgYG6O3tw3VchO8A4zquvtfA0UlqC7t6kSsIX+k4L0kOepynVT4QShLxIOIqLEehKh5eLo+Xz2KUioRdBxull4xKifIkFadCz8le+voHkZ5H2BPYM2WssWm6PZdtpkdLOUtTeY6myhxNlVk24LDVNGgsVvBGp7DLHrFwhIoruevu7zI3NVs7/HuZMG+1fiVBm9gESvnuv7W3KAQS8JSiIk3GZwUTuTRFYwt5uZmiu4WSu4Wyt5mS3EhFrmNkzGMu5+J4unNzXZdCoUAqlaK1tZW21jbWrVvHunXraGtvq3rQeZ7neysu7++7mskd4PwlOT7DA9OJlEhhkjctyqk6It0bsFra8RJpymYERwlAYVkWpmGSm8tz330/BFcSVgZmvog5Nk6XadAuFI3KJaLKhFWFkCwToUxSVWjBo9NUNJVLGFOTeKU8lmly8PBxHnz0CTzf+LbcOPXUEP7reIGNzve+03P/L7COF4haW0PVH0BpG4VUHgg//1jgEWwKXBSOUJQ9l6m5Ao1tm6lr3kIqvZmEX+KpTSSSm0mk1hNPtzFXrCAMHZjR9VySySTr1q2jo7ODzs5O2tvadWlvrxK9paWl+k4CiV1dalrzmNbU9Vcw9HJMg6JtMh21CG/fTNO1V2FduIvknstpu/J63JYuilYYhTa6uNKjr7+Pk7092KaNKDk4mQytqkS9KmMrB2lA2bIohEwKIYOCbVHxAxbEcGk1XWKVOdxiDq9SQUrFd+79ARNTUzqJkDYr+9NIWk2tjdO2mlFL+ip5dH/svzH8xbO6AVqWwdzsFNncDPlyjly5QK5UIFsqkC0XyZZKzBZKhCIxPwa9wDRMisUi2WyWQr5AvpDXJZ+nkC9QyBfI5rLk83m9os3yV6KJqlhYgNUs0c9bknseGIaJIUFh4YTCxDZuJbRtB9l4gmwiQaGugVFhU7djJ046QdkCzzJwleTHDz5IJB5DmAb5UpH6cJQUJpZnkly/ifXX3sD6G99I941v8sstdN/8BjpvuJb4pnVYEZOGUAiRLVAplImEo0zNZTlw4AgVf+znKYU0qCF5rdHP1KUqvecbmR6/Ll8CzAeeNPXSy5qpqZ9Ec11p9mDJpmCDf7wpDFoam1Cex9zMHIVcgVw+T7ZQ0MX/HopEiMSivk+EjvJqh2wGBwfp6enh6NGjHD58mCNHjnD48GEOHz7MyZ6T5PI57JCNacwvNzUMw5+3929l0bNdbTgvSa5Arz4zhCa5MKkYBtH2DiqxBJ07LmDnpXto3biRug0byMZs7OY6PEOnLRrPZBgcHkaYBsI0iSZi7N6xE9O1iCQauOYd7+Sa972faz/wQa57/y9z7ft/mWs/8Mtc+4EPcO2HPsiVP/0O7FiaiBFl15YLwHGxDINoLM6TTz6D68dpNy3Tb83VeTt/eKGJGPz/QtXroCbdeGvreGH1vRQ4VZcjfIK5jovnKYQyqFRc3IqLW3H8or9XymV/YYnOiT7v8honnogTi8WIxWJEY9Hq90gkgm3Z1ZTTK8+JrxneXnlQCvy5Te34oVCmSSgWBdtCCkEsHifdUE8klcC1Dex4FIByqcyhQ89TLBW11VfCrgt309HWhpLaKyqSTmGnE1iJCFYiip2IYsejWLEYdjRFLF5PWESIWWEuvXgP8UgEPL2Qpa+/n0KhiDBNTD+ov25EvmPIqbDAI+yFYP785V1NT49aL7YXggVWd4X+7ejfPq9pzM9NSykplcrU19XTua6TtrY22lr90tZGR3s7He0dxGMxyqUSpmli+Z1nLBpl/YZuNm3cxOZNm9myeQtbNm9h69atumzbSntHO57nYZhG1Vd9KdYiw7wioaSHxF8iqBQhYWC4Hk4uj1MsMjMzg1OuYElFQlhQdhBAsVjkwIED1ZcqEGzfto14IkYoonCyGZ64+072334ne++4k2funC/77/lP9t1+F8/c/R2YncX2JPV1KbZv34bruph+HPeBgUEtNfzUx/PEXa6BBfAJ+oIZFhB8vjc526rO9viVENwJQX9c3Trf0QXP3w7Z1TUE5VIZ13Xni+NWkyuAXiNgGH6sfEPgelrCB1Feq+d5bjUlcqlY0iRfFPNe+dI7mE5bzTiPSR6ICp9IZYe5oX6iToGZoT6mMuNMj46QHxkm4UrKmWksCYV8ntGxsWortG2L9evXY5gGSjiYXonhvU+z/4472Put2/1yB3u/dRdPfvN2nrzjHnr37cMtZLEMRci22bNnD57nYdk2kWiUY8eOIT25IFWSr3ycAv4Byw1sXyBE8N85Iu/ZIhhFSL8jrv5+od9fQLJUKkUul2N2dpaZmRmmp/Wa8smpSTKZDJlMhmKxSCwa1f4GUhIKhSiXynpBSo9emNLb10tfXx/9/f30D/Qz0D/A1NQUITu0QIKbplm9j5/Us3k5cd6S3HX91MIAKGzpkus/iRgbJJafJd9zkuLJXmJzs4w//zwiV8SSUCoUcB0HQwik9GiobyCdTiMAhYEnDCINSdKdzaRbW0i1tPmllYb2Dura2rAScVzbpqwUpmFSl0rhua4fgEBxoqeHQj6vJUgQaspv56fEvI57Siwwsi2rfvrjzppyKjX8VPteFPx7k/4iEK2i613VaS0UsViMxqZGGhoaqvPbwdx3e7s/JdbWhmWZfihmSKfTrOtaR2tbK03NTTS3NFfXnzc3NVNfV08imaCxsZGGxgadh96HtpXMY02SvwKh1HwYXYlESEnIcYnmCmQPHiHz6DNEjvbh7TvI4I8epNLbi1HII5RAeQrTssDQicPbWluJhsOgFEoIrLoUV//sO3nth3+Ft3z0o7ztIx/lbR/5CG/7yEe45Tf+K2/+8K9w6S1vRMXiCMvGNPRaaImW3I7rMjw0xNzcHJafInd5gr8UrHqFwR9z6z5uyQPQ8JeNZueyZDIZ/dwsq5q+OCjCEJjB8wSi0SjNzc10tHfQ2aGjura3t9Pa2qoTUBoGrqtdWeOxOJZtaVuAVEhPIv1kGSvd1mrCeUlyITTJDUMbcFAKU7nYjkM0XyA8Ps3s84co9p4glJ0m4ZaJoBuUlGBaNobQASEa0vWELBvXdfGkIlbfQMeui0lu2kZy4wZSm7tJbeoitamLRFcnqfXr2bDnEuxkHa7SJiTTNKhLp7W0kh65fJ7JyUkAPKmb97zEFS/6sQdTPisW/FzgZ9mPLMxzVrvnhUFr6cuwaNGmbDZbDeA4NDTE5OSk3znoTkJKiSEMpKzJFIsfjLGmLtM0KJX1+DyZStLU2EQ4HCaXz6GkwrZtPVTwl5hqbceva7n7XCV4ca3tJ4FgTtOTNeJRIf3Ee4ZUGAaIZARSEQiDISoYytG+4wLfWUUH2U8kYgjhoQyJ60omxqd47tFnGOsZYqy3l9GTPYz2nmS0t5epwRFGj5zgyDP7yc3OIT0P6XmIQJo7bnWaZmp6Cs/3LVcIPJ94y0PVOM2s5DBTu//UZQnpX2ADDtT405WVMf9+VoLneRRLRUolHVPd8zxyudzKkv8U0Jb6ko4u4zvABAEcYd4WoL/6jjH+vpWGPasB5x/JQXtLeR7Kk5gEWVEMpDDJmWHo2sDON/0UO974VirpOhxTgJJUkOTcsg4e4IcgClkWUlZAlQlj4mSLPPCd73HHP/4zX//cF/ja332Jr//9P/H1z/8T//b5L/Hv//hPPHbXdwnPFEh4AmEamCGL9V1duEWdkM+2LGbnZvCUh/BDRQVkk0EI4ECPr3GUWR5Lib94kcviohfDLE/yxQStJenZu+JqrFSflrQL76HWjhCMjSPhiJ4aMy0AwuGwP8RZfEMGwg8jpQKNRWoruudpe0gkHGFmZoaenh4G+geYnJoklUzpuO1K2wJM00QppS31QjvGnG0GnPMJ5yXJldL/CaHHev6KckpmmGIsTriji/j69aTWb8BIN+KYcTyhM1sGDUfVqNG6Vxd4hoFjG+y54Wre+r6f4x0f/EXe8cFf5Kc/8F5++n2/wE+97+f56V/6ea563Q1YqRjS1ucZpklzc3N1nl0BrudhWJafAQUwTpWaabFVfSmx5yOuLJXcS0vQgfjGrlN2IstD1aRtOl05HZa9ur/RNE3iiThNTU1Eo1Hq63Uwx+Ukq1JKS/5ikdGxUY4cPsJzBw5w8OBBDh48yIHnDjA+Pk5HRwebNm1kw4YNbNq0iWQqifTDfemO1u8QPVmN1rrc9VYLzkuSA0hPYgpTe0D5L8iIhdh9xaVc/prLiIagVM6y+9JLSLa04QkLQxk+DwTS8ygXipgES1UNbNOivaOdq193Exsu3M6GXRfoz53bWL9jK+t3bWPDFRdz4WuvJdbZTMUWICSGoUilklimiQHYlqUDQAoAQ2fwUAYG81bdBY1N+UagM4RhGKcsQsznH3+hEIsCUJ6qvBAobY3DMAxCdojW1lY2btxIZ2enlro1xwl/hiJfyHPkyBF6e/uQHrS2trNp42a613ezfv162tvbiUQijI6OcvzECYrFIoYQ/jy7wPVcTMPEtm0twf2eJqh/teL8I7kW3/7LD7aBNCpIUWFdWwNHH3+Yu774eb7xD5/h5LHnSDTEIaQ9ngJLS9DItFuogSUMQh6UZ3OMHD9JMTPF3PgEcxMZclNTFGamcbIFSpkZxk/04czlCWFW7QKxWBTTMHBdPV9eVQX9kM2nlhTCfxVBWQbBCrMzKWdSXxW1x53rsvxvrnVMqSXacs/Itm08z+P48eMM9A/Q0tKCEILDhw/z8CMPc+8P7uXe79/L9++9l4ceeoh9+/YxOztLZ0cn4xPjHD58hLm5OYrFItIXCIHHHTWdyGrG/NM+z6BqwgopAQoDYYWZHJ+gb/9TxDKjdHoeVrEELpjKwjC0S2SlUqZcLuO4DmZNhktDGHjZIrf/w7/w+Y//GX/7h/+Dv/14UP6Yv/79/4//+0d/yve++g3K49OoQgnHD0rQ1NRUXb/suS7r12/UWbuERCkXpXRgQxP8ojN6mRiYGJoSCoRSNa6htd9BKOOMiqF0B2MIXbfJvGTXQRyWhqU6VTkdzvj46jhboZSHwtNDHKGWGXJoFEtFjhw5QjgSxrZt7r//fvr6+mhuaWbjxo1s3rSZzZs3s23rVrZt20ZHRweZTIZvf/vbFPIFGhoaGBwcoqenh7p0nXZ68m0EQujVbMq34q9WnJ8kF9r4tHijUgLHj9iSNixSwsLwJBXXpeK5SM+jtbWVhgadgufiiy4mEtFeVDoIo8I1oWv3dna//jqufeMbuOENb9TljW/guje9kUuvv4b29V2aQIaJbVtIpairS/PTP/Mz3HTTTVxzzTW0tDZTrpT8cbSLwEPg6Simwqtm2lw41g721UQ8XTAODyKgnkFRftFhZeevi1/Ops6grpXK4uODIjShF2Kh5Dydmjw6MkprayuZiQxPP/00GzZsoLm5mVKxRLlUJhqNkkqliMViuK52g61vqGfT5k0cP36c48ePs3PHDnbv3k3nug5MQw+ZgrnyYIpuNUtzoU73lF+BqOTz3P3f/if5px/Hm5shlkjhCCjX1bFh1y6OPvUk8bkCnhA07NiGECGmj/dRNg2crVtg+zbaL9iBqkBXYxOXXbyFZ2/7Oo9++RvUr+vkLX/w28Q3rgcrjMLQbRmFMBRmqczUc8/z7S/+C8VymVt+48PYm7ZihsPM5eZ4au9+iqUy3d3dnDhxgkcfeWSB3UCri/iq7Nk2LH3O2TXI4PVKfbpa7rpBXz+vOusZpuDYxcdr6OHPwuZT/XWGIBGLct1117Bj5zbWr+/ENE08V9Jz8iTlcom6ujpaWlqWJCME7c8wOTlJPp8nk8kwOTlJW1ubnhEJheju7iaRSMyr/v70WD6fp7e3l5mZGdLpNGNjYyRTcS655BLCoTAA4+PjzM3NsX79egAmpzJ0dnboefRViPOW5Pf8t/9B7ukn8eamiSVSVIBKXZr1Oy/k+N5nsGfnKHse6y7cRUiEyJzoo2ibOFs3Yey4gPYduzClSXMiyaUXbuDQt+/ggX/+OqnWZl734Q/Suns3wo7qeGUSUB5CeohSiYmDB/nuv36Nsutxy6/9V+xNWxCWzWx+jqf27qNUKrF7926mZ2ZwK2WC8NFUiYHfKpcnz8p4YSTXr1hrKkuUtwWkD/Rt4ds7tL1iJZK7rl43X0v02s4sZNlEoxE617XR1tqCYRq4juTkyZOUKyXS6fSKJC8USvT39xOPx9m3bx+bN2/GcRxaW1tpbGzEMAxMszYlceA6rKrZUcfGx4iEI4yMDNHZ2cm2bdswTZOJiQnm5ubo7u5GCMFEZpx16zrXSP5Kgpbkf0TuqSfwZmeIJdJIYVKpq2P7pZfy9IM/RuRncITB+osuIYTF5LEeKqZBceN6ohfuon3bDjzDwhaKG6+8jMn9+7j7M3+HmyvQtG4diZYmPEvHVEfpdcyGlAhPUpyZZXZiAjMa45Zf/zXiO3dQrHhkC1kefPhhvHKFt739bYSTUYTE97eukZL624rkCRBI/cXBGs/ulcnFG3wsHqmp+XsEbeCs3u/iYwME97H8/ZjCxDJNTEuvGtMElPT391MuVairq6O1tbU6KwB+FFWpOHnyJLFYjGeeeYYNGzbgOA4NDQ20t7dXF5gIIfS8t2Hiuto2omcX9LUmJycZGxvDccsMDAxwyy23EAlHGJ8YZ25WS3KlFOMTY6xb16nn51chzD/5kz/5k8UbX+nwHIcj9/8QZ3gIVS5hh8J4psSNhmjtbGdyeICwlJh2hGRzKyAoTk8ihUA11BFqacaOJ8Gy8ZRLMh6mo60d5bhMjE5QnMoyOz5FdnSIuZFh5kaGyY2MMjc2Rm58gtLMLLgedirBpiuuQKTTCMNkLp+jf6AP5Tps27qVVH16gf+1bYcIhcLYtv6u836dolgW1oJtFrZtEwrpz7MvIWw7uP7Seqv1h23s0Pzn0uMXnRuy9HELioVtah/ycqlET89J+vsG9AyE5wGimv8skL6u6yKlpFAsMDc7h+u69Pf309DQgGmZbNywEbtG2ubzeUaGRxgcHGR2dhbbtgmHw1Wih0IhisUijlOhVCzhei4NjQ2USiUqlQr1DfWgoFgokEqn5lenrTKs1EW/8iF0fmnDV3mV0LnAPCERYQsRCqMMG4wQlhkGw6zOLimlKFfKOBWHrRds5/kTJyggueSn3sLb/usHufiNN7P16stYf9nFrL98Dxtfcykbr7qUjVdfxoZrLmPTta9hyw1Xsu26q0h1tFIql6iUy/T09qKkwnEc3ZBr5pLFMvPLpypC6fHtwvOUX5ZOVq1catMgL/67drtes2OI+WsJpUNKCyVPUfzjltmu1X/J7NwsE+NaRe7r76tK3Xg8zvT0NJOTk9XY6ZOTk+SyOdrb2+nr66OruwvHcejsWDh/Pjc3x8BAP6FQiI6ODpqamhgbHyOTyVSdXkzTJJVKUSwWSafTDA4O4jouhmFUj8FX9c9OOzq/cH6q67k8d//RH5F/4knU7CyReAJlmBTr69h98w3s3/8U7myWbMFj64V7sEoVpo8dpYiDs2kjsQt3EW3pwIwmuP71NzI02ENlbo6N67uot6PIikPFdTA8z1dd/fTEeooeoXR2FCMSQYWiTMzkkAr2HTrI5ESGcj7H29/+U9Q11S9RyM9uPL0YK6neZ4Pl+nW/XrFM/csa6hZhufNqMDk5zdEjR3E9l6bGJmzbRkrYvHlzdclp1WDnz5e7rssPfvADurq6mJyc5JprrvH90LU34YnjJ2hpbSGVTFXV81JJj+M3bNhAJBJBKUWlUuH5QzpIyMjwCDe/9mZKxRKZTIaNmzailGJiYpyurnWrVl1f7o2/8iHQBiGh3UqFUtgS7LIEaXDRTbew6bW3sPPmm+nY0EWlUkBKB4XCMA1CvkpnmSaWMNi8ZQt1zU30DA6wr+coR8ZHOD41Qc/MND2z05ycnaPHL72zc5yYmeXY1DRHR0Y40tNDX28v0nHp6uoiEo4QDkd1gzRMUDqw/9jYGENDQ+Tz+eqc7HL9q1KKQqFQTeC38JiAcLromOaQyUwyNDRMLpdHVUm5tCglyGaz9Pf3MzQ0tMLcsDYIKiXwXMnY2Dh9ff3Mzs4tqa8K32ndcTwGB4YYHBjC82R1eyKRZMvWbWzcsInu7vVUKi4DA4P09Jyk50QPPT0n6evro6+vj7Gxser4vFKpIJUkEtG+7UEHMDM9gzAEdel0NdabYRiEw2ESiQRzc3P6l/gqeyQcJRyKYNkhpKdQCp3CyV9q+uI63lc+zk+SA/jJ48HwrdcSs1zkuceeIl90aNm+g65dOxkZHWJuchSUC/6ihFDI1hLBqWAhsIVFR3snmzZsoLG5CWHphiNNgTQNXQyBNHRQCWmaSMPCEyZSGAhgLpfT1l0/b7oIPN7Qq6OGhoYYHBxkfHwcViA4/vbZ2Vl6e3s5cuTIor0LSSaVxHU9hoaHGRgcZC6bXfa4WlJOTU0xkcnQ19e3PMkV+lgFFcdhbGyMwcEhxsbGl61PQ//tVCpMz8zQ03OSSlm7koIgZIdoaW6hq6sL07Qo5AvEYwlc108QGXidCThx4gQTExPVOW8URCKR6pWUglKpRCik1yLUQgiBaWojXO02wzAxLctfAKNnDHTRMdgNQy96Wa04/wxvSiFdl75HH6PQN4Aol7EtAwyFRFAoOxQdh2hdiuzkBCf3Po2YnSGsFGXDRDQ3Ub9pM54Volx22LZ9K6alp4wi4TDxeJympmYdUaShwf9soqFhYTK9hoZG6hv192QyyZFjRym5DoV8AadSYd26Lu2X7npUKmUykxlMw6RSqZBMJquNOPh0HIdKpUK5XCaTyVAqlSgWi7S1tel9ToWKU6ke6zhO9ZhMJoNAYNkWtmVTqejjKpVKtc5KpUKpVGJ8fBwhBJVKhVQqheu6uu5KmUpl/pyK45DN5shMTun5bc8jHo9TDvZXgnN0/eVymcmpKUqlEvlCnlQqhVSScqVMpazvp1zWanKhUOSiiy+mtaWF5hb9rOvr66mvqyebzVJxKiQTSY4cOUJzczOVSoWOjo7q6jHHccjmsjqij6+qB+PsmZkZIpEI8Xhcd6QKRsdGAZiZmWHDhg3V+29sbMAwBPlcjkQysWDMv5pwXo7J3VKJR//hi5y47VvYuTymcDFDoLApm1HKsQRN27ZRyM5SGB0gVi5gKEHWjiB27OCCN7+ZkVyRYsnhTW9+E4l0FJjPdx6ob9VHoxYrPHq/p61j4HhMZKZ46PFHES5MT02xY8dOhIBkIollGxQKBYQQFAoFEomEDvbPwqAFwdLMQqGAYRhkc1laWlp0PDR/ft0Q8/fiem7V0Cf8fF+RSMSXXkZVkirlh19Sirm5OZLJJKVSiXA47DfspRJdKoXreJTLZcLhMBWnQiSiI97aARnE/JJWlA6SGYvHmJubm4/GIkRVRVZK4XouGzdspLGh2f/tfgpqv56hoSH6+/u59NJL+f73v09XdxelUolL9lxSHWeXSiVOnjxJKpWioaEBy7JQKHLZHBMTE2zYsIFwOIyUkkqlwsGDBwEYGhrizW9+M0NDQximQXd3F0pKRkaH6ezsWKAxrCaclySXrkvvg49w/yc+RXhqGqOcxwxrO7GLRUWEIGThOEWipsLCRSiTXDiGddFu9rzrXRwaHMapSG5+7U00tjT4JJ9XHQO7KwROK0vVOSl0IAhDgeN6PPjww8xOTFOplLnlljeRzc4RiUZpqK/DNPX6dcMQOI6r85rXOMlU+xP/+kHD9zzfMBWMG2tuQ0ltQbZtC88PHKkP8W0V/sEKHYIJdGcRJGaYV9eDJjDfFIQwkP7iGoVaENU0uDftc+67GCvt6BOsCV+4sk4/P8/zmJ2dJZ1KE4lEqx5zwp/xwI8S8/gTT3DzTTfz1FNP4TgOkUiEzZs3k06nF0jswcEBPS0ZDuE6DhXHYb3vCaedeBQTExl6e3ur02bXXXcdhw8forOzg+YWvdZgdHSEjo52olHdia02LBZR5wUM06Tj0ktou/FGCrE4ViyFK0OUPCiWKrjFLO7cGEZpmlJuilx2jny+gFN2UArCsTjFcgVhQqFQ8KXdvMGp9rvrejiOh+t6eF5AFm3wElJgSt/5U0mKs7MIoYhEwiSTCSzLJBrVCyss2yQc0Vk/YvEokUhI/21bGIbQ4ZxrHDmCeeMAgaRTcr4ExzqOPlYpgZICz1P6vl0Xx3VxXYkX+Gl7OllgEGhBF73f89dXe9KrDiU8z1tyfLBPyiBIhf7N4VAY0zR1x2PZS+K0BZqDJ3V+NJ3lVAe50B2Mricej1IoFOhe383Q0BC2bXP8+HEcp1LtBNPpFNu2b6W9o5VkIk5jYwPbtm0hFo/6fjy60xsdHSUWi5HL5Vi/fj2e55KZnCAej+vIPn5HV+1EVyHOS0mO3+izY+M8futXGX/sKWQui+M4ft5yD6SrDXJoaeQKQTESJ7J7Fze9/5f54RNPkEpE2X7Bdnbs2qFJI3XvL4TA8yTT01MUi0XfQKSlaywWI5lMEomE/W0ACsd1uO2220gm0gC8+S1vZnxsnGgsqiOT2Av7UyUVJX+MWqlUAIFTcashiaXUZAwa9Uqolfogqn72VQTKCAp8QoLCMMzqXPG8lqD3gb/uxP/Nyh/zBk3Ftm1a21qpr9O/VQhBIpGoLgNdCi3JpZRMTU1Vx8xAVRsIIKXk2PFjWGaIdevW8eijjxKPxxFCkEql2Lhxo3ZaEQrLMnEdF8u25jtAvzPUBB9ndnaWSqXC2NgYN950I5OZCcYnxtm968LqeWNjY7S3r0nyVxyEEKRaW7jpt3+D1/2v/8kFH3wf7W99Iw2vv4HIZXsYMA0GMBg2Qkyn6whtvwDR3YnZ0IinDIQ0iCfizM3N+WqutsKCQcVxGR+foFgq0tDYQGtrm86a6btUTkxM4PiB/4OGXylXKBQKSCmrXle1/WetBA7UWNdxiUaidHV1sW7dOlpaWiiXy+Tzeb9zcXF9SVproAvKvJGsxhjmG+dcPzmB6/qS2HXxpINULp508fzVVwuKp5AeSE8PH5TSNodqp+GPWgzDoLWlla7uLrq6u+js7Kx2GOdCZnR2dNLf348nPXbs2MGRo0dwXIfZOT3roLUvfX/VpaM+wRHa+n6i5wQTmQksy2JiYoJt27bhuR7Hjh+nu7u7ai8I6lm+c1odOG8l+bJQCul5HHzyKb7xf/8Br+QQDoe4+rU3cdWb34gyDEYHx7DjaR565BGSdVGi0ShXX3sNsWgMt+IxPq57f9u2SadTjI2NEgpHcB0Hy7JpbW0lny/4hPZoa28jFo1QLBb5+te/TmNjM23tbVx15VWMjIzMS3JraX+ay+VwXZe6+joMYTA3l6Wn52SNmh6MWQNf7SDtkobneujht44h7zOyuk1z09CGterSUk1aQ1jV5brB2H05GIaBVLK67jpAe3s7rW3NADgVh8xkhtaW1qpmsRCBJPeYmpo+pSRXStsNDjx3kHy+wO6LdjM6MuL7sGspbpomLa3NpNMpvbLMH9OXiiWy2SwDgwM4FYdIJEYmk6G5uZkLL7yQnp4TuJ7Dzh070fZLvY58dHSUjo6ONUl+PkABhXKZHzz6BBOhJJlkikpnGxe+/mZSbW0kGhuxknGssEVTcwOFQoGJ8Qmko1AeDA8PA9DVtZ5YLM7g0JAfA9yqquXDw8PMzc3S0FBPR2eHntP1JEKYWJb2w45FY/79aKszfuOtLdWwT74Ucl0d9DEWiy3wdbctPY7VxcY0bQzDwhBW1Q99YZzyCOFQWH8PhwmFtWEqFLYJhUOEI2EikQjhSJhYNEY8Np8scLkSjUa1g49/XlCi0aj+bcHv820EgXq/sOgh1Pxn7Rr2eVSfjSfZtm0r5UqR4aFhurq6ueiii8lMZvA8HYhxeGiE5549yP79z3HwwCGeP3iYY8dO0Nc3gCEsTNNmaGhIxw24eBdj4yPMzE6zZfMWvwMU1bAdpqHV9tWKVSXJPU/y+ONPctt/3MXcbA7LMnnHO97KzTffqIM7SMnw8AiGYTI+Ps7evXtxHJe3vuVthEI2U9PTdLR30tOj1zvH4zFK5QL1dfUUCgVcVzfKXC6HZVns2nUh5XKFzGSGunQd3//+9zEMg8svv5zu7m5GRkaIxWO+6+UiiYUil8vhuR51dXUowHW00asa2CAwCqGnw4JptHmrtc+y2rqVvxa8Kk21NlBLKE2mYBx/agihreKGaehL+dNzOoGBPsZxHCYyE7S3tVdJvhyCMXk0Gq2R5PNSPyC53qGn5J5+ai8dHR10r++mXCrxzDN79RRdIk4krBe4BHWYprYzjI2N4Xouey7eQ2trK4OD/fT29XL5ZZdry7uhtRytAUnGxkZpa29dk+TnA2ZnZ/nu9+6lUChi2xZbtmzk8ssvw7ZrnRz01FJDfQOe6xGLxapeYI0NzUxMTDI6Mk4sGsc0TUZHxxgdHWVyaoqBwQGklNTV1REKhThxogfbtqiUK2QyGW059p1GpNRhlxc03NPAsiwi4UhVcofDYV0iNuGIhW0b2LZBKGz6xdKfIYtQ2PCLvy9UWyz/WC3xw2EtlaNRPVyJRqMLpHRtCYfDRKNRwiH/XsJ6tiBwPSXQWM4UtWP8RQg0AeFP/8WiMV7zmtcwMjrC3mf2ohRcc8017NmzBxSMjo5y7Ngxjhw5wpEjRzh58iT5Qp4dO3dwyxtvobGxkSNHjjAwMMCll1xKMpnUMxi+QTFAYE9YrVg1klxKyXe/dx933Hk3hjAJ2Ta//MFf5KLdu6px3DxPMjY6hu0vb/zuf36XRDJBMqGDF6zv3sjg4CCe9JiengEkXV0dFIoFBvoH2Lx5C9PTM8zMzNDS2kI0olP1FIoFDjx3gFwuh+M43PKmW4jH4oyOjhKPx0kmk0tUU/ylkhVHr6uuuuj6Eo2a8aoQWlovfVWBlK6V7Lrx6kYclBoscexZeM2l0Op2gIActSSpOLqTOyNJPu1L8thSSc4y9yGlzoxy7Nhx+gcG6PBzo8XjcRA6OYPn6mwo2r9ddyLDQ0MMDQ+RTtexdesW3XH6c/i1UEoxNDRIR2c7sZgeZq02rBqST09P89ef/hwTE9OYpsHmzRv4lQ+9n3Q6VT1Gq+vDRMIxTNPkRz/6EaZpks3luWD7BWzctInhoSHGxzO0tjUjEOzbv48LL7yQkB3iyJEjbN6ymXAozPT0NA0NDdTV1TE2PsZDDz1Ea0sr+Xyet7/97ZimyeTkJBXffdRxKxhC+ITXiQUK+QLlSpm6Om14WxYicJjRFvB8Pl+dcltC4CrBF21e9tgA/nbly1f/M5GIV8MlLW4ii4npuA6ZTIa21raqJGZBZ6X/9qQ3r66vQPLFCIyOhgGlcoXjx44zMDBAKByq2hMCT7h8PsfM7DSVcoW2tjY2b9k8bztY4VpKKYZHhmhvb1u1JF+hZZ1fUErR09PHxMSkrx5LbrrpeuIJ3ZBqj1O+sDP9oP6FQoHZmVmUUhT8HGZbtmyiVCoxNDTERbsvYmhwiMcff5xNmzYRjUQZGBigo6ODfCHP+Pg4A/0DenzteYQjOi2P4YcnisVixONxUskktm0zOTW5wOnllFiwhNOgUChRLJZIJtMkkykSiRSJeG1JkogniceTy2xPLCyJmC7xOIl4nLj/mUwmiUWjFAtFPOmhkAhDx7ebDzAZWOtfDuhn5HkKy7TYtm0bN998M1decSU7d+6ksbER/FmAznXruOSSS7jxxhvZsXM70WjE16BO/ZxPNbuwGrAqSO44Lo89/hSmaaGUR3f3OjZv2oi1QqQP5Tt3rFu3jmwuixCC8fFx6urqiMfjjIyO0FDfgEJx/PhxGhsb2bhxI4cOHWJycpLOzk5yuRzRSJS6+jo2btqIaZgUCgUaGxrBn0sWQmBZOtpKkJcLf/5ZSW1hx5cwpyoBXNclHtcLKWzbJmQv9SoLhUKE7GW2LS52RBf/79rxdigcqo5Ta8fei+8ngGmYp+PRQpzu2JqOJLDIS6nDWguhME1BOGwTiYZpbm5iw4YNrF+/nob6BhLxBKGQnnGYv9C8ZrFccT3tdLRasSpIPjMzS3+/NooJIbjwwh3EYqe2lBqGQWNjI1JKGhoamMvOIQS0tLRgCINjx47R1Nik0+wkk4TCIS7cdSHJZJKpqSmGhoYIhUIkE0kEOu56qVymta1Ve9gtcgUNjD1BMfylqMuReSWIJdL/9OecLYRv9IJ5jpzJ/a1kTFsOpzp2MQGDshyEf29GNXPMqe9zcV2L/16tOO9JrpRiZGSMudksUirC4TB7Lr7I78kXokoon3CRSIREIkE4bFMs5imVShiGXkjS1tZWXTYphCCXzTE7O8tcdg7TNOno6Kh6Xg0NDZFOpzENg7p0Hcr3oHIcp3ptpXQxDEOrwTVeVkqp5Rv+gswoAoHhB4UIMqW8HBDV6y/N1LI8FpOn+nfgRVfTedQSWVWddpai+u6WFGrm3H1nH6VQtUnafK1g8bAjeOan6hhWA1Z+U+cJpFQcPnxUZwuVko72Nurr6xaombWofaG2bbNp0yYqlQqGMDh8+AjJVKIq4dN16apqnEqlMIRBMpFE+ctBO9d1Mjk5yaFDhzAtk/r6+moscCn1AomJiQkmJiaYmZkll8trjy3DrLF3+Y1+GY4vhPAJdybHvhQ4R0Twib48sc5Mgp876M51+XtZPVieCecRSqUSff2DCHTY382bNxEKhRYfBr40XSA9lWLjho2UyiUsy+LkyZNkJjI6s2ZzEyiwLbs6Pg2H9Sqr+vp61m9YTyFfoK+vD8d1UFLR3t5OKBSqqo+GYZBKpUilUiSTSRKJBMmUnqtF+Wqr344XN+7lCiyXOeZ0OB8bcI1kFn4mlpXKT6bHO69wXpNcKUU+X2BmegalwLZDdHWv06uUloFY4AmmAzBEo1Fi0RimZVKpVMhmc9Wpr7a2NhobGwmHwySTSZpbmmlpaak60ExOZnAch1QyxcTEBB0dHYjaMaIhqmGLQyGbUMjGtmytZhq+uhl81tzXKaXYCptXxk+K5Cvf6Iq/rYqAvMFxtX8vKueA7Ke/n/Mb5zXJAfL5HLl8FqUklmXqTB3VLCVLEcxHC9+l0TAMOjo6cF0X048P1tTcRCwaY2R0BKUUsViMpqYmwqEw2WyWYrFIe1sbDQ2NDA4OEo1G8TyPSCRSXSGmlMI09YISzd+lDVH46vey4/FlfoJpmpRKehHGXHZuSZmZmWVqaprp6ZmaMuV/TjM1PcXUlC6TU5MLzs1ms2RzWbLZLLlcDs52rLoggCQLXW1fctQSvbacGc7qd56HOO9JXqlUcNwy+BbziB/+aCUIQ0c6qVTKzMzOMDU9RXd3N+FwmPr6ek6ePEnFD3mUSCTI5/OMT+h44FPTUwA0NjYihMHQ0GB12mn37t0MDg5y5513cvvtt3Pw4EGk52GYAsMUKzY8VWOICiBqLdw1iEajxOIxPZJcRp2fnZ1lYGBwxTI4OMjQ0BDDw8P09vZWhyEqWDDjB4FAQDQWxbT01NgpNYsqFpGc5Ym+WGs5N/Cf7RJV/tTwTbCLN686nNceb0opDh89wmc/+3/xHJtYLMzHP/47tLY2L9uQPE/6ye5yPPnkEzz++OOYpsnNN99MMplkdGQcy7KIxWLs2bOHdF3ajxHuj4P9Bu+6Lr29vezdu5d0Os3o6ChNTU3861f/lcOHDmMYBt3d3XzkI7/FxXsu9gMG+v1pTf6zfD5Puex7vC1af74chCHm100vg9nZOfr7BzBN09cOdHKGqpEPPZXnedoNdOeFO7H9jCS167GFH/IpIMBK1wsglWR0ZJz2du3WOr+0Nfi9up7ArTVkh0indcCJBXX7MeNqXYADj7eVUdt5nk5mLWwTSoFSgtGRYdraW4nHV6fH2/kXrXURZmbmeOLJp/BcrRZffvkl1NXpgPu1cF2XTCbD3r37+OH9P+QLX/wC+/ft5+TJkzz+2OPkC3mGh0eor6+nXC4zNTVFXV0dsXgEwzAxhLaYB0EEDx48iGXbHDt6lAceeIB77rmH4aFhHNfB9VwmJiYAxZVXXUkymayuJAuglI4mIz1JJBqprow6FYLVZ4E0XFwsy8Z1PT3n70tVHVpcBi266kvQ3d2t3ThrOCLEwnsQQoe5WkyOxVAostmc/p1C6AqrknSe5AClYgkhxPIrvpacc7ZS/zTHBil0ECghdDJLIcjlciQTcUKh1Znw8HRd3ysesWiUcFg3GNdzmchkdND8RZidneOLX/wSX/ril7j11luZm80SDodRCmZmZ/ne977P7XfcwYMPPohUikKhyMMPP8yTTz7N8NAwo6OjnDzZywMPPMihQ4eIxWMMDPRz4sQJnnnmGXK5HIZpYFt2dY5+ZmamOu4+JWqF0YuAaZq0tLTQ3qYj2LiuU3XGkVLL9lA4zObNm6lvqD+tGn6qfUsgOHc/5AXh1ARXSnf0hUKBXD5PLp+nUMhTKBQol8vVmHWrEee1ug4wN5fls5/9B/r7h5BKcvPN1/Gud/6UdiGtwfHjJ/jzP/vfTExM0NvbSz6fxw7ZeuGH0tFZHcfhfb/0S7S1d+q5bs8jm8sRsUOkUiksy6K+vh7PkwwPD2LbFuVymc9+7m9RSsdNMw1N8Lr6On7rN3+L66+/npaWppp5e/2p/Ln2cqVMOqUzgZz5qzh1Y5RSUfbDUQVRZgzDn0mI6cU5OnDDclgoeRfe0/IkVkoxMjJSnV1YCUoppqZ0HPf6+vrqtiVY4BATfH8B8sh32FG+zeHAgQP88Mc/plTS2oTWFEwsw2Dnzgu46qoraGvT0W1WE857dd2ybIaHRzjZO4iSEsd1uOzyS4iE9UKRABMTkzz08MO4rksoFNLLQitBcgMdAy0ajXHxnj20tbbR1NREPB6nsbGRRCJJLBJFKr2KbWxsjEQ8QSSijW6xeJRCvsC6detob+9gx44dfPjDH+aqq64CAdFopIbk+p5UEJHVcf3ORm87szJvMFuuAJimXjsei+voL9FotOo/oJRC+l53S8s8KTzpVSPY6KKQan5b7T3n8jnt4nsKgig/ZroQQodkXunQBUaz4PtKB88j+O3zG/xzhLZ/fOZvP8Ohw4cZHh5mZGSE0ZFRRkbGGBsd4/mDhzCE4KKLdtW8q9WB816SK6V4/vmjfP7z/4znOZiW4P3v/wUu2XPxAtfW48dP8Bf/6y+ZnJzCtkMUinny+TylUhHXD12USKRIJVNccskl3HTTTSglKZcrWIalx+TKwzQNvVIrpldxpVIpyuUyuVyOVDqBQC9EsW3bH5dDfUP9Eiuu8MeCExMT1SAMVXXxtO15eUk+T3Id3mj+73lUSbjIfVTJwOg2bzuo1gXVjqV6bd9AF3xXUtG9vnvlJbPotd+Tk5MYpklDfSOepzsa0zR9J6Kag1dwb10Jtb91Xu3WFZp+JKA/+qP/yVxOp5JShsDwc7oaQv+Sm26+gV//9V9d1iX6fMZ5T3KAbDbPF774ZXpOnKTiltm4sYv/+qsfoqG+vtor9/cP8Bd/+QmGhkYwTRPhJwtQCj/+sMCwLFzXxTJMbrrpJl772ptpa2vHtmzf6KXn1fUSTE2KcCiEVxPa2PAJI/xURCMjI4RCoQXebQFcVxvoSuVSNfABtURcEcsQwCedEDVZWXx7W7AfVVt3TR21l/Ot4YvvVwRZWWrIF9TluR6RaIT6+vpT3ntwf+VKhSefeIqjx47ieR7NTc28973vpa2tJqTzCyB5QO75zknXFQqFOHbsOH/6J3+G468401GyNMmVlNimyZvfcgsf+OVfWtGZ6nzFqiC5UorHHn+Sr//bN8kXCxgG3HD9NfyXt7+dupQOGjE+Ps5ffuKT9PT0zo/v/DGb1EyH4N16Aul5JFMp1q1b58cj084thqGdaJTvxKK92/xG5nnYpsWuXbu44YYbCIVDVWLVPmblL+EUQlSXOZqGjkKqFmVNcV0Xy5oPH6xxdgRYiGAt+0pjco35+w2uu7SZnIrQCzFPuP7+fv7ly1/mwMEDmKaJVIpQKMQHP/hBbrzxRv94ibmg5zkzVCV5MJTw37MwBPd+/17+9V+/tuDZ1pxILBLll973C9zypjesqeuvVOTyeb70pX/hwKEjSOli2zbXXH0Vb33zLTQ2NJDPF/js33+ehx56FNNcOFUSPAJh6E9DaikvfPfUwGnENLUkkkoifUmnSS5AKTyfsIYQ/NTb/wvvete7FjQYhcK2LCoVh7nsHNPT08zNzlEqlXBd16/L0GPpWIzGxkaSyeQy002nI3kwhaXV9oU4W5KvjLMleblc5jvf+Q633XYbrq9mKN8ouGnjRj72u79LQ0PDOSf50PAwf/PpTzM6Nr4gqmz1PClpaKjjD//w97nggm3V7asF573hLUAoFKK9vY3nDx6iUCqjlGBkZJwTJ3qJJxLU19UxNT3N/ucO+Hmy5jH/0nXRGqv2R9XrlLRqrqrzzvPHSqmQUuF5CoRAGCAMg7GxUa68+io9F20IlJQIYGhomIceeoiHH36Y5559jpGRETKZTLWMjo3R09vPwecPcfjQIUZGRwjZNg0N2hqtcRoCVl1p/T8WIPj7NHWcQwTPtlKp8MADDzA4OKhdbfwUwiDIZCaZmZlm+/btRCIREAaO5yFMEyX0vPZpi//DDcMEP+LtRCbDV77yFY4eO1a1IQQdr9CvFSFgy9YtvOENr/OjyawurBpJjm9wOXGil3+59atMTs1QtWMJwaaN3YQjIb77vXsxDRPLOn2s7aC3r0r6ZSRXsE8FiQoN7WxiCsEnPvGJqheYgWB8bIxv3f4tDGHQ2dlZDQapapxUgobqeR6Z8QkGB/upVCr89M/8NG2tbf5VTyPJBfMhoJes+w7+PnUdp3s2Z4OAyLlcjq985Ss88OCD+NkNqtDz+B67d+/m3e9+N93d3ZiGzu9ei8VSuBbVe1aKUrnM4MAAd951F/v379fPVs4THJ/koGc/3ve+9/KGN75u1Y3HWW0kx7fgjo9P8I1/v51jJ3RKHcu2EAoqvhXcdV0qrl5EogyBIUwc18U0TIQh/KG5bkjLSURVXQwxL6Xm92rVPmSafOqv/oqO9jakryKOjo7y5S9/mUKhSCqVJBaLE41GiESivmOOQClJoZAjn8+TzxWpOEUKxQK/8qFfprur27+Or44vIbC+F/xMoWeDxc1gOSItPuZMEZA8n89rkj/wwLLz3koopARhCbo6O1nX2UnMz4M2f5BW8QneiG8ZD8iv0O+5t7eX0fEM5XIZ6Y/DDb+eoD4pPUzL5NI9F/ORj/xm1dV2tWHVkRxfoucLBR559Al++OMHmJqaRkkQSgF+Q/DzixXLJSplh2KxiOdp6Ra2bd0B+NM7wXf8BhKo7/gLRYQQ2GagGfix0YDf/d3/nz99Bq2trUSiUX784x/T39+PaZiUSkWKRR2NxjQtfW9KUiwW/AUzDUjlkUoleOtb30zUj5467xe+mCgByWsk+RlicTN4qUh+66238uCDD1XvsxYSPfQRlu7DDMOo+tYHWHAPPuFF1XiqYRoGnpRUnCCVs0ZAcoLfJ6CpsYGP/c5HuOCCbatSirNaSY7fGBzHIZvNcez4CR597HHGRsfIZgs4rofnE1f38v6CDv9RBFMx0pMoqBrUAhEilT9O1xfypbrfCRj+2iahSKfTSN+SvnXTJjZu3ESpXGJ0dJSJ8XGSySTJZJJ4PE44HEEIHXpqZmaGmZlZyuUyb3nrm9i2bQvxeAzhq/QrIyD5vCQXYt6yH9yzYH5bVaotE4xC4Gdj8WlSracmh3otpJLVYxfu0x1rIV/gy1/+Mg899NAKklx/CkPfn1/TwmOWaa6L7yNAQPzFe7Xbs6KpsYEPfegDvOY1ly3xkFxNWLUkr4XrupTKZaanphkYGOLI0eMc7+lhamqGcrmC5+oke1qaBo04OFtL12C73uI3fl9Vn7dma2mhlB5fzj9ZxWWXXMKmjRtBGJRLZYaHh1m/YT3443HXk9UFKKZhooCenh5e/4bX0tigV6mFLBPLqpnjx+94/FvQEL7NsIaEi1u5f6xSvkYSTAcKA+WvPlvcLKp/L6jSN0xKT3dzNecIoXOuw7xjTi6X49Zbb+Xxx59cYvzEJ7m+5YUdRC0W3xenIPnSYzW5DdNk86ZN/NIv/gIXXLCNUE2qpdWIVwXJAyil8DxJuVKmWCgyl80xNDTCjx54mOcPHiKXzyOlxDQtTMPU+b/89EX6fACtwmvVLmjxuvEopUBpctuWSTQa1pLcz61dl04jDJ3JIxIJs2PHTkIhG8/T8eA0QXU0mVKpyJFDR2hsrGfnhRfQ2tpMPB4jZNsBExaMu4N7qyWF5ouuUzfi4FXrjqC2E1pMptrtupMLiO8f658slVraCfo3Zpqm7jD8ey2VStx997e5/fY7cCrapz5QkaXU69j9Cqr3Fqj681jqxae3LoUOHqLDXxuGIGTbNDY2csP113PjTdfT1NS0KIXW6sSriuS1CH6253nMzmXpOdnLsWM9jIyMMD0zS6lUxnWCFMJBY9aNNWjE+sN/fEpVnWpMw+CSPRezfduWakfx7HMHmZmZoampmVgszvj4BA31DcTjcX/sqRub9OOxl4pFhgeG2X7BNqLRCKYpaO9opbu76xU1dlSLgjIuJnotlFL09w9w++13MDY6tkCd1t+0FiH9PsTvW/xz9ddA1aa65n0ei69pWdqQmkwmaWluYn13N9u3b6elpem0wUVWE161JF8MKSWu61GuVCiXy/7yzGCcWqu+6gYWfF/QUPxewDAMUskkkYge52VzOX5w3w9pamommUwipWRqcoax8XEK+TzCMLBMy5/eUbiOSzgcprW5hcamRizTpFQuMjY+yg03XLcg9dP5Bs/zyOfzFIvFGmk9vz8YCkm1dNhQHZ7421fmqN5hGDqGnm2HCIdChMOhV1QH+XJhjeQvA+ayWe759ndw/TTFkUgEy7IRmL7fu449Z1l+3i//PCEMyuUSpVKJTGacQrHAe97zrkWOMWs4HQIN7NWKNZK/DJBScvjwEZ597gCjo6NUKhVM08K2Q4TsMJY1nw5YCJCeS2WBRuGRTMbZseMCLn/NpSuGnF7DGpbDGslfJkgpmZmZYXh4hLGxcaYmJykUijiOh+fq6Sftt65DONu2TTKZoK6ujrr6FK2tLaTTOnDFGtZwNlgj+csM5U+ZeZ6H67q+ZV1HSsU3Fpmmdrs1jCDn9tI56TWs4UyxRvI1rGGVY6lHwhrWsIaXHWqZKD7nCmuSfA1r+AlDT9+6lEplP52Wzqd3rrBG8jW8bNBz29q2sLjZvVptDp7n0dNzkocffpjBwSFaWlq44Ybr2bJl8zkzsq6R/BWIWjK8UvBC7qm2aSk/Om2hUCCX00tps9ksruvS1tZGV9fZefIFdZ/NPS1t6tq9txYv5He+UEgpeeqpp7j99juYnJyqXre1tY33vvfn2bp1yzmR6GskfwVBeh5zI+M4pTJNm7oR5+AFnwtU8gUmevqo62wjfhpHHNd1mZub81fSzTA6Osrzzz/P0aNHmZyc1CGv5nToq6mpKRzHYceOHXzuc5/TIazPAFJK9u/fj23b7NixY0nnoPwZDJ18Ui8pdpyK/11vq5QrFIq6w8nlchQKeVzXpb29nRtuuGFJnS8Fnn32Wb7+9a8zPT27YLsQJtdfdw3vfNc7dJScF4mXjeTSdSlnsxQyU8yc7GWs9yQV16F921Y6d+8i3tSMeBke7CsZ+UyGe//q08z0DPDG3/soHZdfysI4xS8/lOcx8PjT/Oizf0/Trm3c9Ou/TqyxYcExUkqGhoZ45JFHuP/++zl69Ci9vb3Mzs5SKpUWuAirmnX6sViMjo4OLrzwQj7ykY9w/fXXL6h3JYyPj/Nrv/Zhpqam+JM/+WO2bt1KsVBkenqa0bExstks5XKZQr5EvlCgVCxQKpVwXA/X9VBSL1TyPAfQKxBRCoVky5bNfPjDH/aDd750GBsb40tf+mcGBgaqEYxcRwftNE2Ta669ip/92XeeByRXCq9cZmZggOM/epD+J58mPzBMKFfA9RwcPEQ0THhdJzf/3u/TtnM7xquU6EpKRg4e5Dv/3x8hMrNYHW285S/+lObt236iPpmVXJ7HvvgvHPnWHZjhEN1vehM3/NqHCCU1CZRSHDx4kPe+972cOHECr5qWKYjTroM/mKZZTVaxbds29uzZwxVXXMGVV+pcceFw+Iyl5/e+9z0++tHfYevWbWzcsJFQOITj6EQZrusihPYvUCoIwhkErdSBMsPhEPF4nGgkQjKlHY7i8TixWJSWlmYuuuiil9SrsFKp8NWvfo0nn3zKX32o7ysSjlCpVBBC8J73vItrrr36nIzLXzKSK88jOzbGc9+6nf77fkxuahrheBjSw/QkQoAjFJ4hqJg29ddcx7v+5x8STry0PegrFdJ1Ofy97/HA//4kibJDKRohfeVlvOv/fOInquHMDo/wo099mslHHyOkLCqNzbzuv/8+6699DfippT7+8Y/zd3/3dziOA/44ORQKEYlE2LBhA7t27WLz5s3cdNNNbN++nXg8jm3rnHFLw02fGp7n8ad/+qd87nN/x6ZNm9m+TdeXTCYxTZt4PEY6XUcqlaS3r4/x8YlqBB3Pc9m2fQu/8AvvIZ1OYZqm70o8vxzX8CPmns09nQ2klDzzzF6++tWv+Yt0dBiv7u5uNm3eyOOPP0HIDvHBD32ACy7Ydk7u4yXRBaXrMnmih/s/9UkO33UHzvAgRjGHRwXXVDhRGzcexk2EkckoxKMUy5WaVV/nDzzHYfzYCY7e/wB9jz+NW9K50s8WTqFA5vARTKeMUB6mAet3bv/JqutKkZ+aJDcyCMpDKImNINnc6O9WzMzM8P3vf78azxx//f173vMeHn30Ue69917+/u//nj/8wz/kuuuuo62tjVQqRTQaxbbts27EhUKBvr4+8vk8zz13gO9+7z/p6Ozg4x//A/7of/w3fu/3Psav/dqHePd73kVDfb2/ak0/Q9u22bxpE83NejVgLBYjEokQDocJhULYtl31MHypkM/n+cEP7qNYLILfISZTKd54y+vJZXM4jkNHRzvNzU3n7D7OfQtSitz4BI986Z+YemYv1uwMKAcjFaX1NZfwmv/6Qd7y53/Cf/nrT/Kzn/0M7/67z/EL//dzvPu//x6h2PmXH7qczXH/336WB/73/+GHf/a/OXTXd5HuqWOaL4fC7Cwn9+3FVOi0upbNhiuuPmcv+oVAeh65wQGKmTHAwzEUdbu2kujUUWM9z+ORRx7hxIkTVdVcKUU4HOY3f/M32bJlC01NTVVSn63UXg7ZbJYjR46glMTzKqTTaV772ptoam4mnU6RSCaIxqKUSiVyubwOz6ybJbZtc9nll/7EAkW4rsvTTz9Df/8gSgmkpzCEyXXXXUNLczPHT5zAtmwuveySc7qc+JyTXCnFVF8/k4ePY5QcDKCCpGPXLm76rd9i97vfQ/t119J48cXU79hJw9ZtNGzaSKql6YzHZK8kOMU8hcwYZKeRU+McuO0eSpPTiw87JZSU5DMZStNTOr5ZOEy0rYP6DRsWH/qywiuXGX72WSiV9BLtVILOyy/BjkZQSlGpVLjttttwHD/yrU/0DRs2sG7dupfkfT777LP09/fjeR62bbNnz8Xs3r3bjwKjoZRicHCQkdERPM+rRq5paWmmqanhnExLvRCUy2Uee/RxXD/TLAh27LiA6667mgMHnyefL7B+QzcXXrjznIzFA5zzXysQ4Cq8kgfSRCmdY2z4uQP8+B+/yMCzz2qV1jD0FJGoyQTw4jr5nwjC8QT16zoxhIl0JbOTU8yMji0+7JSQrsfUiZNY+RKmMCiFwlz402/Hjv9kNZvi9DTZvgFMR4JhYrc0svnqK6vSeHJykr1791aHWaZpYts2N954I8nkqTOcvhC4rstdd92lkyYaBpFIhJtvvplkMrngOM/z6O3txfXzy+mxtmD79q3Y9rk3qNVqMSvB8zyOHDlK/0B/tUOMxWK89nU3UyqVeeaZvRhCcPlll5FOp87pszvnJMcQpDraSXd1IUxbGz08hVsoMfHkXn7855/kx5/+LGPPHcAtFrUedR4jlEhw82/8Jute9zpi2y8gvKWLSN3ZqVrF6WlGnngGUSzhKRDpBjZec9VP1KqupGS6b4DswAiGFAjbpuPSi0m0toAQuK7H/v37OXnyZPUcKSWmafILv/ALeJ5HJpOhv7+fI0eO8PzzzzM2NlYjxc4e09PT7Nu3D9fV0XO3bNnC6173ugVST/npkQ8fPuITRSA9SSwW5bLLLllWVVd+/rlyuVJNWXUmcF2P6elpDh44yIMPPkRfXx+lUmlZsjuOw+OPP6FDiilAwSWX7mHdunU88vCjZCYm2LHzAi7es3tJGOoXi5ckTZIdj5FsaWLw6BGcfBZTSoRUhBQwm2Xm5An6nnqKYmaS+o4O7ET8FeP4cTbwHBfpukTq0qy/5ko233A9O19/I+m2lhV/j/I8VE3SPaUkE4cO8cw3/h2jkMcI2bRcfjkXvvVNL59VXYHyXPBTOSEEbqHIgdvvZnTffqT0sJubuPhd76Zh4wYUUCwW+cRffoL9+/ejT9EdUmC8+u53v8utt97KF77wBW699Va+9rWv8cgjj7B7925aWmqyl64Az/NwHKcqiYUQPP3003zxi18kl8sRiUR4z3vewzve8Y4FpJBScvz4cR544EEcP+66lJL167t47etuIhxeKMkdx2FiIsMjjzzKY489zr59zzI4OEgqlSa+OLFDDXK5HE899TR33HEXjzz8CAcPHGTf/v0IYdDVtW5JxzM7O8ddd95NuVJBCJNkMsm7fvYdnDzZy70/uI9QKMTPvvudtLS0nvPhxEtCcsMySbQ2U79pA+MDA6jZHLhS554yFJZ08LI5xg8dZXj/c0Sbm0i0tGAs14MF8dErFdxiGeV5iGCKY4UX8HLAKRQZeOxpnvjqfxCvT5Fe10EknSIcX77D8ioVpvv7OfbAg/Q/9CiZ4ycwQnoK6egPfsDI3mcQ0sVuaOCmj32UeHv74irA7yTcYgmvUgE/KeNKDfG0UIrS7Bz9+/bT++OHGH7iabJTk0TTKfJDwzz/H3dSHM/gmQaNu3Zx6bvfjeXnChsZHuFTn/oUk5OT1eqEn97pqaeeYu/evZw4cYLx8XGmp6cpFApks1l27NjBxRdfvGJDLhaLHDp0iP/4j//gnnvu4eDBg3pOOxrlz/7sz9i3bx+e59HU1MTHP/5xtmzZsuD3u67LY489waFDh/zxn8LA4MorL2fnzgsW2Any+TxPPfk0t932LZ588mkGBocYGhqit7eXgYEBLrxw55Jkk0opRkZGufPOu/nRD3/M+ESGcrmC4zqUSiXGxybo7uqiubmpeo7rujz66GM899xBpCcxDJM9ey5m3bpO7rrzHvL5PG94w+u5eM/FhELLcOBF4iUhOYBhWSRbW9lw+WVU8gXmpqYpV1wUAsNXV5TjUs5M0bdvP9FUgrr16zFriK6kpJLPM3LgIIe//V2O/+d9jD97ANd1CCUT2Ocg4mZ1POWraMsRdDGk5zG271nu+8RfM/Hcc4wcPsaW667WGsky91Oey3Ls/h9y32c+R98PH2D0mb30Pfkk/fv2wtwcww89QnlsAmFZJLZt5eL3vBtzsTOGUuQzkww+/iSH7voOxx54iOnefkzbJpyIY5yt5VopZnr7eOT/foF9/34bvQ88wuRzz9Pz2OPMDA+Q6xtgYu+zKMfBTMW56N3vpG33hQhDJ4A4cOAgX/ziFymViguuG4yVY7EYiUSi6tF2zTXX8Ku/+qu8/vWvJ51OL7lXpRTT09N84Qtf4A//8A/55je/yYMPPsh9993H/fffj2VZ/Md//AeZTAbTNLnlllt43/veRyKRWFBHqVTi3nt/wNTkVNXIk06leevb3kxjY0P1urlcju99715+cO8PyGQmEYYgnU6zadNGstk5crkcXV3r6OjoqKkfBgeH+Pd//yZ7n9mL47cZ5QedRAlKpTINDQ1s3761eq1ischdd97D5NSUrkQJrr3uah5++FFGRkbZfdEu3vTmNyClpK+vn6mpaeLx2Dkzvr1kzjABlJS4hQIjz+zlyf/3H+SP91KZmwHPxcJDeC5mOIRqbeWG3/td1l1xBWYoVHWmefa2b9Fz/w8pT2YIOQrPADcRp/01l3PFe95Dw6YNuK5LKB5f0EEsB6UU2odQR/EEcEtlJnt6mDh6hHhrM207LySSSp+S7PnxcX70yb9m9LFH8VwPK5ziyt/8MDvf9V+q9Qao5HLs+8Y3OfSN21CzM0g/5LBhmgjLRCkH0/PAE4hkmt2/9PNc8ku/WNVSlFIozyNz7BiPfunLTD//POTyOK6HYwhiba1sev1r2f2WtxCtSyEMEysawTxVA1GK2b4+vv+XnyJ/8BBmuaLzkAkDz7RwLYGJwnYkjlLEtm7kbX/x56S6u8Gfq/7Lv/gE//sTn0Ap7WEGUFdXx6WXXsoll1zCRRddxLp162hubqa5uZlUKlVNYrASwT/zmc/wV3/1V5TL5Wrna9v2Av8Jz/NIJpN8+tOf5n3ve98CIkgpOXLkKF/60j+RzWarJqctW7bw27/961WpXCqV+MEPfsh9991PoaA7qabGRt75rp9BScmtX/kKSil+7ufezTXXXFOtf2xsjH/7+r/z/KFDGIaB9CR2yAYFlYp2BLIsizfe8np++qffXtVs+nr7+Zu//SzlcgUlJaZp093dxcREhp07d/DWt93CzMwsDzzwAMeOHSMWjfKBX/4AmzZtXPKsXgheMkkeQAiBGQqR6upi41VXEoknGB8YwSkWkbICNjilEl6pwsDJk2y+7lpC8TjZ4RF++LefYeAH96Kmp7CRqJBJOJnEjkbIj4/T99gTTB07zv7v/Sd22KZ+XZdWA5d5MF6lwuzgMCcefhwhJZF0ErdQ4Lm7v80Dn/0c/ffdz/GHHiY/l2Xd7oswV8iqoVyXkw88xJE770QVZhGGxDBtSKbYfMM1CzoH6TgcuOtuDn71a9gzk1jK0Sl2o1Gi6zpo37qN7NgwynNwlUG8az1Xf/hXCaV8a7EC5XoM7tvLfZ/8K6ae2YddKIJXQVgmsXQK24TRw8eYev4og48/xfEnnyTd3kasvn75jkopCpNT/PATf8Xcswewy2UQHo4lMNIJ2i/bQzQappzJIKWHGwmx6fWvZdP112P6OeKmpqb48z//C4ZHBsF/x0II3va2t/HlL3+Zt7zlLVx00UVs2LCBlpYW4vF4dY588TNVfmaVL37xi3ziE5+oOokARCIRLrjgAt7whjdw+PBhKpUKANu3b+djH/sYLS0tNTVpoj388CMcPXLUT/ukr3Xttdewffu2KjGfP3SYu+66m3y+AH7a69e/7mZaWpq56857mJ6eJpVMcvPNN1FXV4dSiny+wO3fup39zz6H4aezSiTiXP6ay+nsaGd8fALXdUkkE9x80420tbUCUC5XuOP2uxgeGtZTeQpAUCyW2L17F2984+t45pm93P6tOxgYHKJSKaGAbdu20dbWtuR5vRAs0wpeGgjDINJYz86f+xne9uf/k849l2FYEaQhsEMRbE9QGBxhemCQ8tQ0j/7d55l87EHM0iwmCswQNLdx7R/8AT/195/j9R//A+LhMH3f/i4TTzzG4//4T0wcPlqVALWQjsPA089w1x//CT/620/zn//rfzF54ADP3PplnvzC52FkmEi5TGiuwMlvf48TP36gahyrhVKK4vQMPfc/gJrLE1ICUXGINKa58n0/j/AdL/A1mMEnn2Hvv/0/3JkZPOXgCA8zFKHz6qu45c/+hM1vfTOWFUZIgWlHaNlxIdGm+bGclB6TR47yw//z15RO9BFWAhcFoSjtV13Nmz75Cd76N5/mmvf/IrmeY4z+6D4G7/shj/7zv1KemanWUwunWOTBL3yBqaefJVR0saREGWA213Plhz/MDX/w+7RcuBNDKCzpkmxsYP1VV2L7UlBKycmTvQwM9M4PdZQiFArx/ve/n1RKB5s8E9dQ5c+133333XzqU58il8tV90UiEd7+9rdz22238Su/8itVKWxZFm9/+9vp6upaUI+UEtd1OHLkCJ4M3p0gkUiyc+cFGIZOLZXL5fj2t/+zSnBdp8nJk7189V//jYHBQRBwxRVXVFV1KSWPPPIIe/ftAz8jTCwW44Ybrued7/wZ3v72t7H9gm3E4zGuveZqtm7bWr2vfD5Pf/9A1SNQGAJDGOzadSHXXXc1d955D9//3n3kcgWk9FBK4FS0H34A5dullmvbZ4KXjeT4Pb5hWTRcuI3r/vC3ia/vBKVzUJsSrJKLN5dj379/i+EnnsJ0XAxpIIVNuLGN1/3O79B9/XUkOjtp3bOHpu3bMTAJSYv8yDijzx+upqkNoDyPyeM9PPZ3/4hz6DixbJFKfz8PfvpvOPTNO7CyJUKewJSA8jCKRY7++AGkb9haUteRI4wdOICBBCWIRpNsvu46Eus6qvP8ypPkRsZ4/CtfozyeAanwjBClSILGG67hmo/8FvUbNlCYmsT1PIRnEk3Vs/H6qzF8w4uSkspcloe/8M8UhkcxlUAJA88K0bx7D9f9zkdo3LmD1IYNdF15BXZDvbZGlx2ygyPMjY4vuX+vXKHn/h/S+53vI90ynqEomSZeOs3Vv/abbHnTmzDCEaaGRpCehxAmjR3radusGy1K4VQqHDn8PJOTmQWZU7du3cp11113VuNIpRQ9PT186lOfYsbvlJRS2LbNm9/8Zj772c+yYcMGhoeHqwtPGhoauPnmm6uk9zyPqakpnnvuOR0Fd2qqSgYBrOvsoLOzs2roO3zkKBPjEwuGAIVCkb179zE0NIRtW1x22aXcdPNNhEIhlFJMTU3z2GOP49V4Mm7duoXXv+G1xOOx/397Zx5lVXXv+c8+58635nlmhoIqkBIBAQVRA6ioISomEKP9NLZxSOdlpbVXP9qsvPe6Xzd2Ygbj8y31JQ+MEic0YpwFBKEsGWQoKKCKGqiCouaqW3XvuWfYu/84lwtE7GjstN217mct/qmiztnn3vPd+/f77d/vt8nOyWLJkqtZuvRqrrzqCoKJZCHLsmhsbKK/vz9ZeCWEoLCokOrpVbz44kaamprIzs4iPy8veT6cP+AnM8PdK1dKEYvFOHasMWnJfFH+r4o8iYBQfi6ZpcX4PB40BY4GvnAIaZq07KyFWBTNAU3zITKymLH6VkrmXOL6sY5DV8NRTuzam4ifCkLlpYxfcCnauVsXjsNg2wl2PvEkkeZmAigCysFrmvQ1HUcZFrrmBV1HegDhgLIxB/qQVty1rM5cS0oiJzrY//sX0UaGABvLI6CwkClfvzEZD1BSMtjRwZb/8Qv6PjmAz7JBCWxfkMyqmcy/53ukFxYSj0Q4te8TVNzE0jyEx46jcHqVew2lMIci1D7xFJ076vBK5aa7aoJwaQlzHvj3hEuKEJqGtGwad9QS6elBeLzg81FYOZms8tLz3BbHNGnZ9iF7/+U3hA3DfU5NEvN5qfn2dxh3xRXofj+n9h2gt6kVSwpkWgYVl83Hl54OSuHYNi2HG3jqV79CSsdVkVB4PDq33377pyLRf46RkRGefPJJDh06hOO4iSu6rjNv3jweffRR8vLy6O3tZe3atcRiru9cU1PDlClTXNM7UeL64IMPcuedd7Jl8xZGRkbOW/UmTpqAN/FOmKZF/cFDmIlCmiSJiaWsvIzrly/nm7feSlZWJlJKBgeHePWVVzndeRpHuj3ww+EQCxdeRiiRhi2EYOLECSxZusQ9yVZKotEY27fv4LU/vI5p2jj22VLb4eFhXnpxI0NDEa66ajHfvftvKCwqTH5dZaXl5CUsulg0xpbNW9mwYQMHDx48O+YvwFcicqUUkVOn6G5qwjJi6BJsXaAV5SIci3hfN0Ja7hepe6m4fAHjl17tBuiUwhyOcuiVTRid3SihI8MhZt5yE2lFhUkTUTkOXfWH2fbTX9C5fy8Z40uZdMMStLAXgY3AQeoaIiebnBlVxLTESaTCQYU8CO85PrlSDJ88Re3j/0L37k9QpokSoDw6OeMnkFZSComo+0BLK5v/+8/o/OgjwraF31Fu1l9WHvP/3R2kFxejLIujb77BqX27kVJi+YMU1EzHn5GGkpJ4fz8fPfVbmv7wOhlK4E0sOo5HY/Zt3yJ34ni0xLnp3YcPcWTT66ihCMLjIVheTNX1S/Gf8esB2zBofOd9dv7819gnO9GkAzjYuqBi3qVUXn8dnkAAo7uHT154Aad3EBwP/pJicqdPQ3g9SNvmxL6DPPdPj9BQfwjNQyKpQxAOp3Hdddd9ZhrrGdHZ9tlDI9wCkwO89NJLyeQWIQRlZWWsXbuWkpISTNPkiSeeoKGhIZnGumLFCvLz8xOR6FbWrFnDhg0baG1t42B9fXK1E0KQlpZGVVVV8jw6IxajsbExaQorpfB4PJSWlnLNNUu59967ufKqxYQTlZADAwO88MKLfLxrN5btpu5qQiMvN5fxE8ad97xaopxWSsmJE+089+wGXn3lNbcK7hyUgqGhIfx+P6tWrWTpsq8xNBShtaUVKSXBYIBLZs8iMyuTWCzG5s1beefd9+jt7WNg4PzmEp+Xr0TkdmSYvb99Brr68Akdn+5BoDN+zhyiIxFs011FFQp/bjYTr16cfGmduMH+jRvp2PYhwpHENSieUcPUK69M7rMrx6Gt7mO2PPIzenbvwasJZqy8hQk33IiWlYkSCnDQwiHmP3APU79+Az7NA8otfy2bPBntnPTHka5udvz6nzm1YyfKjOMAFgLCaYxdeDl6wI90HPoaj/Huf/1HuvfsJiAtdOWgKYWtCyqXXU1x9TRQkuNvvcex3/0erbsHpCRckE/5rIsQmsZIZyfbf/Fzml55Bb9pIXFQAiwNsqdVUr7wcjSfD5RipLeH2mfWY7S04rEVIhhg2vJrKK6allzFzZER6je+Su0vH8fu60Hq7nhsx8ZbkMfcu/8GX0YGdiRC7WO/Znj/AfR4HKHr5E6cQGZpiWtdba/ljUcf4/CB/dimiSNdC0oIkQyyneuDq3P6yw8ODrLr4108++yzPPxfHmbVqlUsXbqUO+64g87OzuSq6/F4WL16NTU1NUgpee6553jssceIxWI4jkNpaWnSJWhoaOBHP/oRL7/8MkJoLJh/GT6vH0143CxLpTFu/FjKy8uSYzLiBnHTQCkbpWx0XeOyBfO59757uPa6ZRQVFSWPqursPM369b9j9669SEehpHBdS6UIBgN4Esdcn3lWpRSRSIT339/CU0/+hrqPdxEzYgjtbGASpaEJnfz8fG6/YzUzLqrGNONsfn+rmySDoLKykurqKkzTYvPmrbz9zrsYMYPKykrmzft8nXP+lC8vcqXcf58DpRSxvn52rV9PywfbwHZQQmcI0PLymHrNMgI5OeiahhJgK0VORQX5iYQHa3iYQ6+/zu7nn0NFIygk0u9nxvXX4E1390uladL87ma2Pfprokeb8QkP5fMvZfxlCxnqHmAkYrv+glenfP5cxly+AKnr4HW/XKl5yR4zMRmZjvb0UvvkU7TX1uLYcaSQCTNew5ueTlH1VKRlcbpuLx/+t//JyIEGgtIBJBYSRxd4i/OYuPgyQHH0zXfY/a+/xezqQlOge70UTp5AdnkZPYcOs+Wnj3L4nffAcZDCdWNModCURu7YMfjDYVCKSGcnO558mt5dnyBMEykUuePGMXH+fHcLUimiPb3s3fACe55eh93dDY6FrSniHoHwByibN5fMsjKip7t4/+e/oHHrBzgx91qekI/yi6qRjs2hP77Btl89wUjTCSL9ERxcgZMQ5i233JKMniulGBoaYt++fTz//PM8+OCDrFixghXfWMFdd93FT3/2U1577TVqa2s5duwYpmm6K6SmMW7cOO644w4sy2LdunWsWbOG3t7e5Ip76aWXkp+fz86dO/nhD3/Ipk2biMdNZs26hPvvvw8pZXKi0TSNKVOm4PWezR/weDzJABhAIODnopkzyM3NTvrstm1z5Mgx1q17hobDrgXxp0Rjxnl75LGYwb59+/m3f1vPa3/YdN7EJc6RmBCCnOxsVq2+lcmJ/m27d31CU9NxTNMkPSODBQvm4/F42LJ5K++9uxkjZlAxpoJrr12WdA++KJ8/SnIBIt097N24iVhfLyXTpzF2Vg1pBRdI6VQKa3iEjvp6Dr62iVMffIDXsAAdS/NhhoMsuG0VmRXlSNvC4w9hMICjCSJ9fbR/VIcWCNBc9xFtmzcTGIjgxYOjC8ouqqb0khqEEBi9fdS/+gfqX9iIORRBF4KMqVOZddvtaP4gnfuPYI+Y+HQdLT3E5KVfQw8GMW0HRyp0JdClwJeR6Qrp5En2PL2OtrfeB8fElxYmHh1BKFyBSkG8b4D6uk/Y/fQzaJFBpBQIXXPtEOHOJ5n5eQjbpvbpp2l68y3s3j50XeEIHbwa2DHqX3iBxi0f0HeiDQCRn03ZxIkc3baDoC0ISInTcoqOjz5i8HQ3ze9tpWffQbS4gaYJnJCf4rmzCBcXoaRk4HgLe9b/nrYtWyE6jCbcU/+Ucg/8lVJSVjGG9tqdHHhhI6cP1uMzbXQUUiiUphg60cb2X/6SEzs/xhiMMhK1aBvoxtQA4TZB9Hq95OfnU1tbS2trK7t27eLgwYPs27ePgYEBZKJDzJmXPj09nerqaubOncuePXvYtm2b+7xCUFxcTCQS4aGHHmL9+vWJvW73d06i48wjjzzCpk2bOH78OI7jMHNmDX//k58QN02GR6LuqqmJRMOKivOsi7S0NKZMnsLeT/a6E4fuSVaoOY5Dd3cve/bsZfv2D+np7sGyLDfZRoARMyBhXXZ3d3PkyDGKigpoazvBnj17aWxsxDBiKOluyU2ePImhoWHa2tqTAbVAwM8NNy5n6tTJaLrG4MAQO3bUYhjutWdMryY/P48333ybD7d/SCxmUFhYyLJlS8/bTfiifKlkmEObP+DDR3+FM9iP8HrJmzSByVctpmR6Nd5w2I0QD49w8uhRTtftoa2uDmFE8ZpxdEcgNT/xcIjpq1dSs2ol3lCQeP8Abz30d5yu/wSJRNP94AmCZSNsE68dx+eAEDq2L8DM++5i2q0309vYyN7fP8/JbTvBMIihyL9oJou+dzf50yoZ6ezijw89zODRw4gAZNVM5/p/XIs3FKLlwx1s/Yd/QOsfwtF1FvznH5FZVkbtsxvort2LX2kUz7uEgsnj2f/Kq5gDA2hSogUC5FRU0N3SRlBpxIRCLy1k7PQZNL79HsTjaEriSQ+hp4WJDvQRiNloSmFpAkeAJoUbedU0kJKYV+AfU8rXHvg+4YxMnr3/+wT7DYLoOF4vZtiDsm18cQth2khNIjXwFxRw2d/9J/KnTePkrj0c+t2L9B48jLRNCPspmjkDo7ub3qZmBArdKwgXFhKJDGJFDTwO+B0NXSlsTWEJidTdsSkEZiBMlz/AP7//Jl2WgURDKNA1jZycHIaHh5Mm+hmf90wE2+v1UlFRwaJFi1i2bBkLFiwgGAzy1FNP8fDDDyc7yqSlpZGdnc3p06fPS4g5w5mGDlK658bNnj2bn/zkJ8yZM4eXXtpI7c66pH8/dWol9953D6HQ2WCgUoojR47yzDPP0NXVjabpjB0zlnHjxxGLRjl+vIWenp7kfQsKcrnm2ms5evQI27ftdH8uXCshOzsbj67T19ePbdtoujvplZSUsnjxFUyYMJ7f/Os6mpqa0RPHXi1cuIAV37gBv9890rqubhfr1/0O07RIT0/jxhtvoKGhgf37D2DE4+RkZ3PDjcuZO3c2uu65UPrH5+JLJcOkZ2XSc7iByKkOPGYc89Qpevbs4/hbmzn25lvUv/Ya9X/8Ix21tQw3H0eLjqDbJo4GUvegF+VTc9u3mLHyG/hCIUQicWaot4vTxxuxTRsciZAghUa4OJ/iqZMZ7DqNkg5RL2SMK6Pr6BHqnvoNvfsOosw4pl8jv2Ymi3/wALmTJyE0jSNbNnPk3TfBMZHhALNXfZvC6umuGxCN0rRlC/qwgU9Cz9GjHPtwG33HmlGaTu7sGi77wf1kV06h78QJhjo6ULaNcCRmbx8e08ZB4SnKY+Hffp8py5YyPDhIz6mTyJEYnngcNTSMcCQikRikdA+WYSFsELZyjzAO+MmdUc3V//FBCqqq8aRl0NnURF/7SRyPhqWBLRWa30vBlAn4MkMMRwZRto2elkaoIJ+j77zDwQ3PE21rR0kHkZNJ+dKrWPCDB8itnEJfZydDvb3Y0sYZieHELZTuwZuRSVppMTHTJG7F0WwLj4I4Cm9xMROXX0vZ5Qt4/e03icRiCHH2/PCRkREsy0qutioRRMvNzaWmpoY777yTNWvWsGrVKqqqqsjIyMDv9zNhwgR6eno4duxY8gTXSCSCaZp4PB6mTJmCbdsYhnGeRRAIBLjqqqtYu3Ytc+bMQSa6t3Z0tKOQeDw6c+fOprq66ryVXAhBVlYWOTm5nD7dRWQoQiQyTEtLK+3tHQwNDbnFOD4v48aN4dZv3srUqZWUlpbQ29OXtExIJLlEYzGkUnh0nWAwwMyZF3HTTSuorJxCLBZj69ZtWJaJ0CAvL5eVt95MVlZmcjxbt3xAc0tL0t09efIUzc3NmKZJZmY6y5Yt4dJL5+Lzef9igfNlRa77fJTPqkHpOgORQWJGDMeIo2IGVjSKMgy0uIXHdNz0ViGw/V6cvBzK5sxl3r13M27R5W6iReIphKZRMGkSaWUVhApLKZg8lfwZ06m6cTlzvrMa6fdzvK4Or2UjkfS2NtO57wBOn/sFaLlZTLpuGVd87z4ySksRuo5lGNS9/DK9Tc14NC+Z4ycw+zvfwZ+WhhACj67T+ME2jL5+dKXhxCyisThOOMSEKxax6IF7SSsuxp+eTtnMmQQyM4lFholHY2CB4/WjlxWz8Pv3UT73Unzp6ZTWzCSzrIyBrh7iIzEcoePJy6X86iuZ/7f/gdzqavo6u4lF41hBP4Ex5Uz7+vUs+N49ZJSUurnouk759OkECvIJlhaTN62SoksuZta3bqX65ptoa2liuKXDTfc1LE4dqGfgeAvGyDCWTydt4niqv7mSS1avIpCVSVpRIRWzZxNzLAa7etyaf81DenkFc++5m5l3fJuIrugZ6EE44Amnk3NxDXPv/i5VS5aQW1rCifZ29u/bnzT7zyCEayJnZGRQVVXFihUr+PGPf8z999/PokWLKC4uTjZrFIlAVDAYZOHChRQXF9Pe3k5/fz9SSrKysrjtttt4/PHHufjiizl06BDRaDRhBk/mgQceYM2aNYwbNw6v14tt2xyqP8SJ9naklIRCIZYsWfKpjLgz4ywoyGf69GoyMzMZGYlixA0sy93NycrK4rLL53PzzTdRWFiIx+MhFAoxpXIKmibo6+snHo8jpTuR+bwexowZw/U3LGfx4sVkZ2ej6zqtrW3U1tYilSQnJ4uVK29m/Pjzg5N79+6lvaMdqRxs22I4MoKUkvz8fJYtW8L8+Zfi91848/KL8KXMdXD3hS3DINrbR+uuXZyo/QijswtjeBjHMMFx9yBlwE9meQmZk8ZTeeViMoqK8KWlXbg7q1I4toO0bVBuy1yRaLo32NHBO/+0luHDDUjLxNF04o4kGM4g/6JpXHTLNyipqsITDCav7VgWjXUf0/DuZuxIlNm3fJ2ySy4++3vTpG79M+x96RX0qIkvFCRzwlimXLuUCfPm4c9IPxtnUArbiGP099O6ew/NtbvQvD5mf+smcsaOcQtLEl+KY1lEe3o4tn0HXS1tTJw7m/KZM/CFw0jbJtbXT+POXQhNY8ysGYTzcvEGAsm/d2+ncEwLJR13xtc09ERG2YG332H3umeRJ04jjThK17B1gb8gl7I5s5i18mYyy0rxnDMmJSVmNMpASxv733qPcFo6VUsWk1ZShOb1YsZi9LU001T3MRVTp5E/aRL+jHS0hJgO7NvHbd9ezemuboKhEPkFBRQWFlJcXMzMmTNZuHAhBQUFpKWlEQwG/2zPNCkl8XicU6dOsWnTJhoaGli+fDkLFiwgPT0d0zTp6upi48aN+P1+lixZQmFhIcFgMBkscxyHAwcO8txzG4iORBk7bizfvetOMv43LZTOuBXRaJSmpuPU1x8iPT2dObMvITcvF7/f/6lxG4ZBZ2cnO3bspKenF6/Xy4wZM6iqmppI3XVXXKUUJ0+e5I033sK2LBZdsYiJEyd8qk782LFGXnzxJfr7+zEMg4A/QHlFOUuXLmHMmIpkrv+X5UuLHBIR9sRLbUVjWLEolmGgEokgQhdoPh++cAhvKITH7/90cO7zoBTScYh0nubUwYOc3H8IIxojs6yE8bMuJqO8hGBW1nkJMWewLcst0bRt/GF3DEmUwhgaoq+lFduIE8zMIJibQyAzE/0zmg0qpZC2jRVzWyP5QqELT1iAbZoox0HzeNE8Z196pRTSskHgFpRc4D6fiVKYhsFQewfNtbsYaG4DXaOgchIl1dNILy50y14/Y0xKSuy42/5X93kTgTT3/tKxkY5EJPZ+kxNEIg214fBhTNMkFA4TCoUIhUIEg0H8fj9erzcpvi+ClBLTNLEsi0AgcJ4gztxXCJFMmf1TTNOktbWNjo4OJk+eRHFR8aeKhT4Lx3GwLBtN++zrn+HMOOPxOLruIRDwXzDLz3EcDCMOuO7FhXIIzmwvDg1FsEwTn89PVnYmaWlpF/z/fyn/Z0T+WSg3upzcYvsiL/GfQdo29pmqHq8X3ef9yyaOc0n4fEJ8tbXqXwQlJY5lJZpHKjSvF93j+fKfxWdw7utyocnvq0RK95x3TdPP6/n2/wNnPte/xmf61xV5ihQpvnL+OtN9ihQp/p8hJfIUKUY5KZGnSDHKSYk8RYpRTkrkKVKMclIiT5FilJMSeYoUo5yUyFOkGOWkRJ4ixSgnJfIUKUY5KZGnSDHKSYk8RYpRTkrkKVKMclIiT5FilJMSeYoUo5yUyFOkGOWkRJ4ixSgnJfIUKUY5KZGnSDHKSYk8RYpRTkrkKVKMcv4XFpQxT2RpihkAAAAASUVORK5CYII=" alt="Logo SanidadEdTech">
+    <span class="url">sanidadedtech.es</span>
+  </a>
+  <p class="disclaimer">Esta guía tiene fines divulgativos y formativos. No constituye asesoramiento legal. El calendario y las obligaciones del Reglamento de IA de la UE pueden variar; consulta siempre la fuente oficial de la Comisión Europea y al Delegado de Protección de Datos o al responsable de compliance de tu centro antes de tomar decisiones basadas en este contenido.</p>
+</footer>
+
+<script>
+(function(){
+  const fill = document.getElementById('pulseFill');
+  const label = document.getElementById('pulseLabel');
+  const len = fill.getTotalLength();
+  fill.style.strokeDasharray = len;
+  fill.style.strokeDashoffset = len;
+  function update(){
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? Math.min(1, Math.max(0, scrollTop / docHeight)) : 0;
+    fill.style.strokeDashoffset = len - (len * pct);
+    label.textContent = Math.round(pct * 100) + '%';
+  }
+  document.addEventListener('scroll', update, {passive:true});
+  window.addEventListener('resize', update);
+  update();
+})();
+
+(function(){
+  const navToc = document.querySelector('nav.toc');
+  const links = Array.from(document.querySelectorAll('#tocList a'));
+  const sections = links.map(l => document.querySelector(l.getAttribute('href')));
+
+  function keepLinkVisible(link){
+    const cRect = navToc.getBoundingClientRect();
+    const lRect = link.getBoundingClientRect();
+    if(lRect.top < cRect.top){
+      navToc.scrollTop -= (cRect.top - lRect.top) + 12;
+    } else if(lRect.bottom > cRect.bottom){
+      navToc.scrollTop += (lRect.bottom - cRect.bottom) + 12;
+    }
+    if(lRect.left < cRect.left){
+      navToc.scrollLeft -= (cRect.left - lRect.left) + 12;
+    } else if(lRect.right > cRect.right){
+      navToc.scrollLeft += (lRect.right - cRect.right) + 12;
+    }
+  }
+
+  let ticking = false;
+  function updateActive(){
+    ticking = false;
+    const scrollPos = window.scrollY + 120;
+    let currentIdx = 0;
+    for(let i = 0; i < sections.length; i++){
+      if(sections[i] && sections[i].offsetTop <= scrollPos){
+        currentIdx = i;
+      }
+    }
+    const activeLink = links[currentIdx];
+    if(!activeLink.classList.contains('active')){
+      links.forEach(l=>l.classList.remove('active'));
+      activeLink.classList.add('active');
+    }
+    keepLinkVisible(activeLink);
+  }
+  function onScroll(){
+    if(!ticking){ ticking = true; requestAnimationFrame(updateActive); }
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  updateActive();
+})();
+
+(function(){
+  const wrap = document.getElementById('areaTabs');
+  wrap.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      wrap.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      wrap.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+})();
+
+document.querySelectorAll('.accordion-item').forEach(item=>{
+  const trigger = item.querySelector('.accordion-trigger');
+  const panel = item.querySelector('.accordion-panel');
+  trigger.addEventListener('click', ()=>{
+    const isOpen = item.classList.contains('open');
+    if(isOpen){
+      panel.style.maxHeight = null;
+      item.classList.remove('open');
+    } else {
+      item.classList.add('open');
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+    }
+  });
+});
+
+(function(){
+  const questions = [
+    {
+      q: "Según el Reglamento de IA de la UE, ¿cómo se clasifica la mayoría de la IA usada para diagnóstico, triaje o tratamiento?",
+      options: ["Riesgo mínimo", "Riesgo limitado", "Alto riesgo", "No está regulada"],
+      correct: 2,
+      explain: "La IA clínica usada para diagnóstico, apoyo a la decisión, triaje o monitorización se clasifica como de alto riesgo, con obligaciones de supervisión humana y documentación."
+    },
+    {
+      q: "El aplazamiento de plazos del Reglamento de IA en 2026 (Digital Omnibus), ¿a qué normativa afecta?",
+      options: [
+        "Solo al propio Reglamento de IA; el MDR/IVDR sigue igual",
+        "A toda la normativa europea de sanidad por igual",
+        "Solo al RGPD",
+        "Elimina la obligación de marcado CE"
+      ],
+      correct: 0,
+      explain: "El aplazamiento mueve plazos del Reglamento de IA, pero no afecta al Reglamento de Productos Sanitarios (MDR) ni al de diagnóstico in vitro (IVDR), que se aplican igual que antes."
+    },
+    {
+      q: "¿Puedes subir un informe clínico con nombre y número de historia de un paciente a un chatbot de IA generalista para que lo resuma?",
+      options: [
+        "Sí, si el resumen es solo para uso interno",
+        "No, salvo que la herramienta esté específicamente aprobada por tu centro para ese tratamiento de datos de salud",
+        "Sí, siempre que borres el resumen después",
+        "Solo si el paciente ya ha sido dado de alta"
+      ],
+      correct: 1,
+      explain: "Los datos de salud son categoría especial según el RGPD; tratarlos en una herramienta no autorizada por tu centro incumple la normativa de protección de datos."
+    },
+    {
+      q: "¿Qué es un gemelo digital en salud?",
+      options: [
+        "Un sistema que duplica automáticamente historias clínicas",
+        "Una réplica virtual de un órgano, paciente o proceso, construida con datos reales para simular antes de actuar",
+        "Un chatbot con dos personalidades distintas",
+        "Un backup del historial médico en la nube"
+      ],
+      correct: 1,
+      explain: "Un gemelo digital es un modelo virtual, alimentado con datos reales, que permite simular escenarios clínicos u operativos antes de intervenir en la realidad."
+    },
+    {
+      q: "Si un sistema de IA sugiere un diagnóstico y tú lo aplicas sin poder explicar por qué es correcto más allá de 'lo dijo la IA', ¿qué principio estás incumpliendo según esta guía?",
+      options: [
+        "Ninguno, la IA ya asume la responsabilidad",
+        "El principio de que la responsabilidad clínica y la verificación siguen siendo del profesional, no del algoritmo",
+        "El derecho de autor del sistema de IA",
+        "Ninguno, es un problema solo del fabricante del software"
+      ],
+      correct: 1,
+      explain: "La IA es una herramienta de apoyo; la responsabilidad clínica, legal y deontológica de la decisión final sigue recayendo siempre en el profesional."
+    }
+  ];
+
+  const container = document.getElementById('quizContainer');
+  const scoreBox = document.getElementById('quizScore');
+  const resetBtn = document.getElementById('quizReset');
+  let score = 0;
+  let answered = 0;
+
+  function render(){
+    container.innerHTML = '';
+    score = 0; answered = 0;
+    scoreBox.style.display = 'none';
+    resetBtn.style.display = 'none';
+
+    questions.forEach((item, qi)=>{
+      const card = document.createElement('div');
+      card.className = 'quiz-card';
+      const qEl = document.createElement('p');
+      qEl.className = 'quiz-q';
+      qEl.textContent = (qi+1) + '. ' + item.q;
+      card.appendChild(qEl);
+
+      const optsWrap = document.createElement('div');
+      optsWrap.className = 'quiz-options';
+
+      const explain = document.createElement('p');
+      explain.className = 'quiz-explain';
+      explain.textContent = item.explain;
+
+      item.options.forEach((opt, oi)=>{
+        const btn = document.createElement('button');
+        btn.className = 'quiz-opt';
+        btn.textContent = opt;
+        btn.addEventListener('click', ()=>{
+          const allBtns = optsWrap.querySelectorAll('.quiz-opt');
+          allBtns.forEach(b=>b.disabled = true);
+          if(oi === item.correct){
+            btn.classList.add('correct');
+            score++;
+          } else {
+            btn.classList.add('incorrect');
+            allBtns[item.correct].classList.add('correct');
+          }
+          explain.classList.add('show');
+          answered++;
+          if(answered === questions.length){
+            scoreBox.style.display = 'block';
+            scoreBox.textContent = 'Resultado: ' + score + ' / ' + questions.length + ' correctas.';
+            resetBtn.style.display = 'inline-block';
+          }
+        });
+        optsWrap.appendChild(btn);
+      });
+
+      card.appendChild(optsWrap);
+      card.appendChild(explain);
+      container.appendChild(card);
+    });
+  }
+
+  resetBtn.addEventListener('click', render);
+  render();
+})();
+</script>
+</body>
+</html>
